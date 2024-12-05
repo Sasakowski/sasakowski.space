@@ -1,5 +1,7 @@
 <?php
 
-echo "69";
+function foo123() {
+	return "bar";
+}
 
 ?>
