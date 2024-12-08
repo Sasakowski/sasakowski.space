@@ -4,34 +4,40 @@ $SETTINGS = json_decode(file_get_contents(__DIR__ . "/Settings.json"), true);
 if ($SETTINGS["Maintenance"] === true) {
 
 	echo "
+	<head>
+		<title>Sasakowski.space</title>
+		<meta name = 'robots' content = 'noindex, nofollow'/>
+	</head>
 	<body style = 'background-color: #C0C0C0;'>
 	<flex style = 'width: 99vw; display: flex; justify-content: center;'>
-	<img src = 'https://sasakowski.space/Static/Accounts/01 Sasakowski/Catmask.svg' style = 'height: 16vh;'>
-	<div style = 'font-size: 12vh;'>☕</div>
+		<div style = 'font-size: 16vh;'>☕</div>
 	</flex>
 	<br>
 	<flex style = 'width: 99vw; display: flex; justify-content: center;'>
-	<div style = 'font-size: 4vh;'><b>Maintenance</b></div>
+		<div style = 'font-size: 4vh;'><b>Maintenance</b></div>
 	</flex>
 	<br>
 	<flex style = 'width: 99vw; display: flex; justify-content: center;'>
-	<div style = 'font-size: 2vh;'>Come back later!</div>
+		<div style = 'font-size: 2vh;'>Come back later!</div>
 	</flex>
 	";
 
 	exit();
 }
 
-// These are internal files that WILL cause PHP to run into errors, the most likely being 'cannot redeclare this function'.
-switch ($_SERVER["REQUEST_URI"]) {
-	case "/Internals/Master/MySQL.php":
-	case "/Internals/Master/Prepend.php":
-	case "/Internals/Static/Accounts.php":
-	case "/Internals/Static/Static.php":
-		echo "lmao";
+// Internals is a special directory that contains most of the site's code.
+// A direct view of any file would cause PHP to run into errors, the most likely being 'cannot redeclare this function'.
+// Try it out yourself! https://sasakowski.space/Internals/Master/Prepend.php - you'll be greeted by a pallas' cat.
+if ( str_starts_with($_SERVER["REQUEST_URI"], "/Internals") ) {
+
+	// ... Except for the Landing directory (direct access is wanted here)
+	if ( !str_starts_with($_SERVER["REQUEST_URI"], "/Internals/Landing") ) {
+		echo "<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 90%;'><br>";
 		exit();
+	}
 }
 
-require_once(dirname(__DIR__) . "/Static/Static.php");
+require_once(dirname(__DIR__) . "/Stc/Stc.php");
 require_once(dirname(__DIR__) . "/Master/MySQL.php");
-?>
+require_once(dirname(__DIR__) . "/Master/Cookies.php");
+require_once(dirname(__DIR__) . "/Master/Redirect.php");

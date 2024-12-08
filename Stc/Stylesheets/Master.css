@@ -1,0 +1,84 @@
+/* Declare site-global variables */
+@font-face { font-family: Bahnschrift; src: local("Bahnschrift"), url("https://sasakowski.space/Stc/Fonts/Bahnschrift.ttf") format("opentype"); }
+:root {
+	--goldenratio: 1.618033;
+
+	--space_s: calc(var(--space) / var(--goldenratio));
+	--space: 1vh;
+	--space_l: calc(var(--space) * var(--goldenratio));
+	--space_xl: calc(var(--space_l) * var(--goldenratio));
+	--space_xxl: calc(var(--space_xl) * var(--goldenratio));	
+
+	--text_s: calc(var(--text) / var(--goldenratio));
+	/* --text: 2vh; */ /* This is set by PHP page */
+	--text_l: calc(var(--text) * var(--goldenratio));
+	--text_xl: calc(var(--text_l) * var(--goldenratio));
+	--text_xxl: calc(var(--text_xl) * var(--goldenratio));
+}
+
+/* Foundation */
+body {
+	margin: 0px;
+	background-size: 6vw 6vw;
+	font-family: Bahnschrift;
+	min-width: 99vw; margin-right: 1vw;
+	min-height: 98vh; margin-bottom: 2vh;
+	font-size: var(--text);
+	font-family: Bahnschrift;
+	color: var(--textcolor);
+
+	background-image: repeating-linear-gradient(45deg, var(--body) 0px, var(--body) 2vw, transparent 0%, transparent 50%);
+	background-color: var(--body2);
+}
+
+flex_h, flex_v {
+	display: flex;
+	justify-content: flex-start;
+	flex: 1;
+}
+flex_h { flex-direction: column; }
+flex_v { flex-direction: row; }
+.Flex_CenterV { align-items: center; }
+.Flex_CenterH { justify-content: center; }
+.Flex_CenterHV, .Flex_CenterVH { align-items: center; justify-content: center; }
+
+block, block2, block3 {
+	border-radius: 1vh;
+	display: inline-flex;
+	flex: 1;
+	padding: 1vh;
+}
+block { background-color: var(--theme); }
+block2 { background-color: var(--theme2); }
+block3 { background-color: var(--theme3); }
+.Block_IsInCorner { border-top-left-radius: 0vh; border-bottom-left-radius: 0vh; }
+
+flex_h > space_s { width: 0px; height: var(--space_s); }
+flex_v > space_s { width: var(--space_s); height: 0px; }
+flex_h > space { width: 0px; height: var(--space); }
+flex_v > space { width: var(--space); height: 0px; }
+flex_h > space_l { width: 0px; height: var(--space_l); }
+flex_v > space_l { width: var(--space_l); height: 0px; }
+flex_h > space_xl { width: 0px; height: var(--space_xl); }
+flex_v > space_xl { width: var(--space_xl); height: 0px; }
+flex_h > space_xxl { width: 0px; height: var(--space_xxl); }
+flex_v > space_xxl { width: var(--space_xxl); height: 0px; }
+flex_h > space_amap { width: 0px; height: 100%; }
+flex_v > space_amap { width: 100%; height: 0px; }
+
+text_s, text, text_l, text_xl, text_xxl { white-space: preserve-breaks; }
+texth_s, texth, texth_l, texth_xl, texth_xxl { white-space: preserve-breaks; font-weight: bold; }
+text_s, texth_s { font-size: var(--text_s); }
+text, texth { font-size: var(--text); }
+text_l, texth_l { font-size: var(--text_l); }
+text_xl, texth_xl { font-size: var(--text_xl); }
+text_xxl, texth_xxl { font-size: var(--text_xxl); }
+
+/* Main */
+#TOP_LOGO:hover { animation: TopLogoRotation 4s infinite linear; }
+@keyframes TopLogoRotation {
+	from { transform: rotate(359deg); } to { transform: rotate(0deg); }
+}
+
+a { color: var(--accent); font-style: italic; text-decoration: underline; text-decoration-thickness: 2px; }
+a:hover { color: var(--accent3); }
