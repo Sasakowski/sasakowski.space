@@ -1,29 +1,82 @@
 <?php namespace Internals\Stc\Style;
 
 function Init() {
-	$ECHO_BUFFER = "";
+	$ECHO = "";
 
 	// Repair
-	$COOKIE_TEXT = \Internals\Cookies\Get("Text", 2);
-	$COOKIE_TEXT_MAXSIZE = 3;
-	$COOKIE_TEXT_MINSIZE = 2;
-	if (!is_numeric($COOKIE_TEXT)) { $COOKIE_TEXT = 2; \Internals\Cookies\Edit("Text", "2"); }
-	else {
-		if ($COOKIE_TEXT > $COOKIE_TEXT_MAXSIZE) { $COOKIE_TEXT = $COOKIE_TEXT_MAXSIZE; \Internals\Cookies\Edit("Text", $COOKIE_TEXT_MAXSIZE); }
-		if ($COOKIE_TEXT < $COOKIE_TEXT_MINSIZE) { $COOKIE_TEXT = $COOKIE_TEXT_MINSIZE; \Internals\Cookies\Edit("Text", $COOKIE_TEXT_MINSIZE); }
-	}
+	$TEXT_SIZE = _RepairTextSize();
+	$THEME = _RepairTheme();
+	_RepairAltTheme(); // Returned value isn't used
 
-	$COOKIE_THEME = \Internals\Cookies\Get("Theme", "Void");
-	$DEFAULT_THEME = "Void";
-	$LEGAL_THEMES = ["Void","Light"];
-	if (!in_array($COOKIE_THEME, $LEGAL_THEMES)) { \Internals\Cookies\Edit("Theme", $DEFAULT_THEME); }
-
-	// Text
-	$ECHO_BUFFER .= "<style>:root { --text: {$COOKIE_TEXT}vh; }</style>";
-	$ECHO_BUFFER .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/Master.css'>";
+	// Text size
+	$ECHO .= "<style>:root { --textPHP: {$TEXT_SIZE}vh; }</style>";
+	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/Master.css'>";
 
 	// Theme
-	$ECHO_BUFFER .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/{$COOKIE_THEME}.css'>";
+	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/{$THEME}.css'>";
 	
-	return $ECHO_BUFFER;
+	return $ECHO;
+}
+
+function GetTextSize() {
+	$MIN = 2;
+	$TEXT_SIZE = \Internals\Cookies\Get("TextSize", $MIN);
+	return $TEXT_SIZE;
+}
+function GetTheme() {
+	$DEFAULT = "Void";
+	$THEME = \Internals\Cookies\Get("Theme", $DEFAULT);
+	return $THEME;
+}
+function GetAltTheme() {
+	$DEFAULT = "None";
+	$ALT_THEME = \Internals\Cookies\Get("AltTheme", $DEFAULT);
+	return $ALT_THEME;
+}
+
+
+
+function _RepairTextSize() {
+	$MAX_SIZE = 3;
+	$MIN_SIZE = 2;
+	$TEXT_SIZE = \Internals\Cookies\Get("TextSize", $MIN_SIZE);
+
+	if (!is_numeric($TEXT_SIZE)) {
+		$TEXT_SIZE = $MIN_SIZE;
+		\Internals\Cookies\Edit("TextSize", $MIN_SIZE);
+	}
+	else {
+		if ($TEXT_SIZE > $MAX_SIZE) {
+			$TEXT_SIZE = $MAX_SIZE;
+			\Internals\Cookies\Edit("TextSize", $MAX_SIZE);
+		}
+		elseif ($TEXT_SIZE < $MIN_SIZE) {
+			$TEXT_SIZE = $MIN_SIZE; 
+			\Internals\Cookies\Edit("TextSize", $MIN_SIZE);
+		}
+	}
+	return $TEXT_SIZE;
+}
+function _RepairTheme() {
+	$THEME = \Internals\Cookies\Get("Theme", "Void");
+	$DEFAULT = "Void";
+	$THEMES = ["Void","Light"];
+
+	if (!in_array($THEME, $THEMES)) {
+		$THEME = $DEFAULT; 
+		\Internals\Cookies\Edit("Theme", $DEFAULT);
+	}
+	return $THEME;
+}
+// AltTheme is just for fun
+function _RepairAltTheme() {
+	$THEME = \Internals\Cookies\Get("AltTheme", "None");
+	$DEFAULT = "None";
+	$THEMES = ["None","Ellie"];
+
+	if (!in_array($THEME, $THEMES)) {
+		$THEME = $DEFAULT; 
+		\Internals\Cookies\Edit("AltTheme", $DEFAULT);
+	}
+	return $THEME;
 }

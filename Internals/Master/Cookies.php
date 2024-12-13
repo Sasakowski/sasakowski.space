@@ -2,7 +2,7 @@
 
 function Get(mixed $NAME, mixed $FALLBACK) {
 	if (!isset($_COOKIE[$NAME])) {
-		$EXPIRYDATE = time() + (60*60*24*36500); // Expire as late as possible
+		$EXPIRYDATE = time() + (60*60*24*365.25*100);
 		setcookie(
 			$NAME, $FALLBACK,
 			$EXPIRYDATE,
@@ -15,7 +15,7 @@ function Get(mixed $NAME, mixed $FALLBACK) {
 }
 
 function Edit(mixed $NAME, mixed $NEW_VALUE) {
-	$EXPIRYDATE = time() + (60*60*24*36500); // Expire as late as possible
+	$EXPIRYDATE = time() + (60*60*24*365.25*100);
 	setcookie(
 		$NAME, $NEW_VALUE,
 		$EXPIRYDATE,
@@ -29,8 +29,9 @@ function Delete(mixed $NAME) {
 	setcookie($NAME, "", $TIME, "/", "sasakowski.space");
 }
 
-// Deletes all known cookie entries possible from the site
+// Deletes all cookies from the site
 function Wipe() {
-	Delete("Theme");
-	Delete("Text");
+	foreach ($_COOKIE as $K => $V) {
+		Delete($K);
+	}
 }

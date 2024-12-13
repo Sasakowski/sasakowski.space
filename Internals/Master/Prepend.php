@@ -2,7 +2,6 @@
 
 $SETTINGS = json_decode(file_get_contents(__DIR__ . "/Settings.json"), true);
 if ($SETTINGS["Maintenance"] === true) {
-
 	echo "
 	<head>
 		<title>Sasakowski.space</title>
@@ -21,20 +20,15 @@ if ($SETTINGS["Maintenance"] === true) {
 		<div style = 'font-size: 2vh;'>Come back later!</div>
 	</flex>
 	";
-
 	exit();
 }
 
-// Internals is a special directory that contains most of the site's code.
-// A direct view of any file would cause PHP to run into errors, the most likely being 'cannot redeclare this function'.
+// Internals is a special directory that contains the site's code in the form of PHP files.
+// A direct view of these files would cause PHP to run into errors, the most likely being 'cannot redeclare this function'.
 // Try it out yourself! https://sasakowski.space/Internals/Master/Prepend.php - you'll be greeted by a pallas' cat.
 if ( str_starts_with($_SERVER["REQUEST_URI"], "/Internals") ) {
-
-	// ... Except for the Landing directory (direct access is wanted here)
-	if ( !str_starts_with($_SERVER["REQUEST_URI"], "/Internals/Landing") ) {
-		echo "<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 90%;'><br>";
-		exit();
-	}
+	echo "<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 90%;'><br>";
+	exit();
 }
 
 require_once(dirname(__DIR__) . "/Stc/Stc.php");
