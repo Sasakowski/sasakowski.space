@@ -25,6 +25,7 @@ if (!$FOUND_BOARD) {
 
 // Check wether the user has access to this board (viewpermission)
 $USERNAME = \Internals\Stc\Accounts\GetAccountInfo()["Username"];
+if ($USERNAME === "None") { echo "Your session key has expired. <a href = 'https://sasakowski/Stc/Login/Login.php'>Login.</a>"; }
 $DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '$USERNAME'");
 $CAN_VIEW = !empty($DB);
 if (!$CAN_VIEW) {
