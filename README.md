@@ -7,10 +7,10 @@ Welcome to the source code of my website!<br>
 - The great majority of the code the website runs on.
 
 ### What this repository SHOULDN'T contain
-- Anything that's not guaranteed to be interesting to a coder.
+- Anything that's not guaranteed to be interesting to a programmer.
 - Any file that's too large in size.
-- Anything confidential and security-related.
+- Anything confidential.
 
 ### Notes
 
-- The website runs on private hardware, not a cloud hosting service. Sudden downtimes may occur without a warning prior.
+- Sudden downtimes for any length may occur without any prior warning.

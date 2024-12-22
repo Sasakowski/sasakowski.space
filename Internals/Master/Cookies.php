@@ -26,7 +26,7 @@ function Edit(mixed $NAME, mixed $NEW_VALUE) {
 
 function Delete(mixed $NAME) {
 	$TIME = time() - 3600;
-	setcookie($NAME, "", $TIME, "/", "sasakowski.space");
+	setcookie($NAME, "delmeplz", $TIME, "/", "sasakowski.space");
 }
 
 // Deletes all cookies from the site

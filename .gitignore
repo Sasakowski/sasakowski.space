@@ -1,2 +1,8 @@
 Stc/*
 !Stc/README.md
+!Stc/Settings
+!Stc/Settings/*
+!Stc/Stylesheets
+!Stc/Stylesheets/Master.css
+!Stc/Stylesheets/Void.css
+!Stc/Stylesheets/Light.css

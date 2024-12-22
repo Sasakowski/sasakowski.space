@@ -26,7 +26,8 @@ if ($SETTINGS["Maintenance"] === true) {
 // Internals is a special directory that contains the site's code in the form of PHP files.
 // A direct view of these files would cause PHP to run into errors, the most likely being 'cannot redeclare this function'.
 // Try it out yourself! https://sasakowski.space/Internals/Master/Prepend.php - you'll be greeted by a pallas' cat.
-if ( str_starts_with($_SERVER["REQUEST_URI"], "/Internals") ) {
+$URI = $_SERVER["REQUEST_URI"];
+if ( str_starts_with($URI, "/Internals") ) {
 	echo "<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 90%;'><br>";
 	exit();
 }
