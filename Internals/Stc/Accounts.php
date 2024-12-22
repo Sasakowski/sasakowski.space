@@ -4,7 +4,7 @@ use BadFunctionCallException;
 use OutOfBoundsException;
 
 function GetAccountDirectoryPath($USERNAME) {
-	$RESULT = \Internals\MySQL\Read("SELECT `Username` FROM `Accounts` WHERE `Username` = '{$USERNAME}'");
+	$RESULT = \Internals\MySQL\Read("SELECT `Username` FROM `accounts` WHERE `Username` = '{$USERNAME}'");
 	if (empty($RESULT)) {
 		throw new OutOfBoundsException("Account {$USERNAME} not found.");
 	} else {
