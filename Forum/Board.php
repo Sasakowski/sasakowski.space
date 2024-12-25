@@ -44,8 +44,9 @@ if (empty($DB)) {
 
 <block>
 	<block2>
-		<flex_columns class = "center_v" style = "justify-content: space-evenly;">
+		<flex_columns class = "center_v">
 			<text_l>Forum board: <i><?php echo $BOARD; ?></i></text_l>
+			<space_l></space_l>
 			<text><a href = "Forum.php">Go back.</a></text>
 		</flex_columns>
 	</block2>
