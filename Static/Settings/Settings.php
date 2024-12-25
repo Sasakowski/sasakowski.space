@@ -48,7 +48,7 @@ $LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
 							<space></space>
 							<text>Age: <i>{$LOGIN_STATUS['Age']}</i></text>
 							<space></space>
-							<text>Timezone: <i>UTC{$LOGIN_STATUS['Timezone']}</i></text>
+							<text>Timezone: <i>{$LOGIN_STATUS['Timezone']}</i></text>
 						</flex_rows>
 					</flex_columns>
 				</flex_columns>
