@@ -40,11 +40,6 @@ if (empty($DB)) {
 // At this point, the user has full clearance to view this board
 ?>
 
-<style>
-input { font-size: var(--text); }
-.comment { margin-left: var(--space_l); max-height: 16vh; overflow-y: auto; max-width: 90vw; overflow-x: auto; }
-</style>
-
 <?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
 
 <block>
@@ -116,7 +111,7 @@ for (let i = 0; i < COMMENTS.length; i++) {
 			<text_s>${DATE}</text_s>
 		</flex_columns>
 		<space></space>
-		<text class = 'comment'>${COMMENT}</text>
+		<block3 class = 'comment'>${COMMENT}</block3>
 	</flex_rows></block2>`;
 
 	BLOCK.innerHTML += COMMENT_TEMPLATE;
@@ -142,7 +137,7 @@ if (COMMENTS.length === 0) {
 					<textarea rows = 4 cols = 64 name = "Comment" placeholder = "Something!" maxlength = 500 required></textarea>
 					<input type = "text" name = "Board" value = "<?php echo $BOARD; ?>" hidden required>
 					<space_l></space_l>
-					<input type = "submit" style = "height: fit-content;">
+					<input type = "submit" style = "height: fit-content;" value = "Post!">
 				</flex_columns>
 			</form>
 		</block2>

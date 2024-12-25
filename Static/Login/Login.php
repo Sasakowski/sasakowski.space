@@ -110,7 +110,7 @@ function KeyOptions() {
 
 			<space_l></space_l>
 
-			<input type = "submit">
+			<input type = "submit" value = "Log in!">
 			
 			</flex_rows>
 		</form>
