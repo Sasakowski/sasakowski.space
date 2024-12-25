@@ -11,14 +11,12 @@
 	</style>
 </head>
 
-<?php \Internals\Stc\HTMLElements\Head(); \Internals\Stc\HTMLElements\Top(); ?>
+<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
 
 <block>
 	<flex_rows id = "COLORFUL_BANNER" class = "center_v">
-		<img src = "<?php echo \Internals\Stc\Accounts\GetAccountFilePath("Sasakowski", "Catmask.svg"); ?>" style = "height: 32vh;">
+		<img src = "<?php echo \Internals\Accounts\GetAccountFilePath("Sasakowski", "Catmask.svg"); ?>" style = "height: 32vh;">
 		<text_l>„For what you believe in, you shall live and die for!“</text_l>
 		<space_l></space_l>
 	</flex_rows>
 </block>
-
-<?php \Internals\Stc\HTMLElements\Footer(); ?>

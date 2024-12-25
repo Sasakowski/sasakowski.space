@@ -19,32 +19,33 @@ foreach ($BOARDS as $V) {
 	}
 }
 if (!$FOUND_BOARD) {
-	echo "Board <i>$BOARD</i> doesn't exist. <a href = 'Forum.php'>Go back.</a>";
+	echo "Board <i>$BOARD</i> doesn't exist.<br><br>
+	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 
 // Check wether the user has access to this board (viewpermission)
-$USERNAME = \Internals\Stc\Accounts\GetAccountInfo()["Username"];
-if ($USERNAME === "None") {
-	echo "Your session key has expired. <a href = 'https://sasakowski/Stc/Login/Login.php'>Login.</a>";
+$LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
+if ($LOGIN_STATUS["Login"] === 0) {
+	echo "You're not logged in.<br><br>
+	<a href = 'https://sasakowski.space/Static/Login/Login.php'>Log in</a>";
 	exit();
 }
-$DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '$USERNAME'");
-$CAN_VIEW = !empty($DB);
-if (!$CAN_VIEW) {
-	echo "You don't have permissions to view this board. <a href = 'Forum.php'>Go back.</a>";
+$DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '{$LOGIN_STATUS['Username']}'");
+if (empty($DB)) {
+	echo "You don't have the permissions to view this board. <a href = 'Forum.php'>Go back.</a>";
 	exit();
 }
 
-// At this point, the user has full permissions to view this board
-
+// At this point, the user has full clearance to view this board
 ?>
 
 <style>
 input { font-size: var(--text); }
+.comment { margin-left: var(--space_l); max-height: 16vh; overflow-y: auto; max-width: 90vw; overflow-x: auto; }
 </style>
 
-<?php \Internals\Stc\HTMLElements\NoScript();  \Internals\Stc\HTMLElements\Head(); \Internals\Stc\HTMLElements\Top(); ?>
+<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
 
 <block>
 	<block2>
@@ -59,9 +60,26 @@ input { font-size: var(--text); }
 
 <?php
 // Load the comments and associated metadata
+$NEW_TIMEZONE = "UTC" . \Internals\Accounts\GetLoginStatus()["Timezone"];
+
 $DB = \Internals\MySQL\Read("SELECT `Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD'");
+for ($i = 0; $i < count($DB); $i++) {
+	$ADJUSTED_DATETIME = \Internals\Time\UTCOffsetFromWebserver($DB[$i]["Date"], $NEW_TIMEZONE);
+	$DB[$i]["Date"] = $ADJUSTED_DATETIME . ", $NEW_TIMEZONE";
+}
 $COMMENTS = json_encode($DB);
-echo "<script>let COMMENTS = $COMMENTS</script>";
+
+$USERS = [];
+foreach ($DB as $C) {
+	$USERNAME = $C["Username"];
+	if(in_array($USERNAME, array_keys($USERS))) { continue; }
+	
+	$DB = \Internals\MySQL\Read("SELECT `Rank` FROM `accounts` WHERE `Username` = '$USERNAME'");
+	$USERS[$USERNAME] = $DB[0]["Rank"];
+}
+$USERS = json_encode($USERS);
+
+echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS;</script>";
 ?>
 
 <block><flex_rows ID = "COMMENT_BLOCK"></flex_rows></block>
@@ -71,17 +89,34 @@ let BLOCK = document.getElementById("COMMENT_BLOCK");
 
 for (let i = 0; i < COMMENTS.length; i++) {
 	const USERNAME = COMMENTS[i]["Username"];
+	let RANK = USERS[USERNAME];
+	switch (RANK) {
+		case "Superorchestrator":
+			RANK = "class = 'superorchestrator'>Superorchestrator";
+			break;
+		case "Orchestrator":
+			RANK = "class = 'orchestrator'>Orchestrator";
+			break;
+		case "Author":
+			RANK = "class = 'author'>Author";
+			break;
+		case "Reader":
+			RANK = "class = 'reader'>Reader";
+			break;
+	}
 	const DATE = COMMENTS[i]["Date"];
 	const COMMENT = COMMENTS[i]["Comment"];
 
 	let COMMENT_TEMPLATE = `<block2><flex_rows>
-		<flex_columns>
-			<text>${USERNAME}</text>
+		<flex_columns class = 'center_v'>
+			<text_s ${RANK}</text_s>
 			<space></space>
-			<text>${DATE} UTC+3</text>
+			<text> ${USERNAME}</text>
+			<space></space>
+			<text_s>${DATE}</text_s>
 		</flex_columns>
 		<space></space>
-		<text style = 'margin-left: var(--space_l);'>${COMMENT}</text>
+		<text class = 'comment'>${COMMENT}</text>
 	</flex_rows></block2>`;
 
 	BLOCK.innerHTML += COMMENT_TEMPLATE;
@@ -100,9 +135,32 @@ if (COMMENTS.length === 0) {
 <space_xl></space_xl>
 
 <block>
-	<form method = "POST" action = "Post.php">
-		<textarea rows = 4 cols = 64 name = "Comment" placeholder = "Comment something!" required></textarea>
-		<input type = "text" name = "Board" value = "<?php echo $BOARD; ?>" hidden required>
-		<input type = "submit">
-	</form>
+	<flex_rows>
+		<block2>
+			<form method = "POST" action = "Post.php" style = "margin-bottom: 0px;">
+				<flex_columns class = "center_v">
+					<textarea rows = 4 cols = 64 name = "Comment" placeholder = "Something!" maxlength = 500 required></textarea>
+					<input type = "text" name = "Board" value = "<?php echo $BOARD; ?>" hidden required>
+					<space_l></space_l>
+					<input type = "submit" style = "height: fit-content;">
+				</flex_columns>
+			</form>
+		</block2>
+		<space_l></space_l>
+		<block2>
+			<flex_rows>
+				<text>Stylizations are done using raw HTML:</text>
+				<space></space>
+				<flex_columns class = "center_v">
+					<text>&lt;b&gt;<b>Bold</b>&lt;/b&gt;</text>
+					<space></space>
+					<text>&lt;i&gt;<i>Italic</i>&lt;/i&gt;</text>
+					<space></space>
+					<text>&lt;text_l&gt;<text_l>Larger</text_l>&lt;/text_l&gt;</text>
+					<space></space>
+					<text>&lt;text_s&gt;<text_s>Smaller</text_s>&lt;/text_s&gt;</text>
+				</flex_columns>
+			</flex_rows>
+		</block2>
+	</flex_rows>
 </block>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-<?php \Internals\Stc\HTMLElements\Head(); \Internals\Stc\HTMLElements\Top();
-$IS_LIGHT_THEME = \Internals\Stc\Style\GetTheme() === "Light";
-$ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
+<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top();
+$IS_LIGHT_THEME = \Internals\Style\GetTheme() === "Light";
+$LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
 ?>
 
 <block>
@@ -28,26 +28,32 @@ $ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
 			<text_l>Account</text_l>
 			<space></space>
 			<?php
-			if ($ACCOUNT_INFO["Username"] === "None") {
-				echo "<a href = 'https://sasakowski.space/Stc/Login/Login.php'>Not logged in.</a>";
+			if ($LOGIN_STATUS["Login"] === 0) {
+				echo "<a href = 'https://sasakowski.space/Static/Login/Login.php'>Not logged in.</a>";
 			} else {
-				$PFP = \Internals\Stc\Accounts\GetAccountFilePath($ACCOUNT_INFO['Username'], "PFP.png");
+				$PFP = \Internals\Accounts\GetAccountFilePath($LOGIN_STATUS['Username'], "PFP.png");
 
 				echo "<flex_columns>
 					<img src = '{$PFP}' style = 'max-width: 128px; background-color: black; border: 0.2vw solid white; border-radius: 32%;'>
 					<space_l></space_l>
-					<flex_rows>
-						<text>Username: <i>{$ACCOUNT_INFO['Username']}</i></text>
-						<space></space>
-						<text>Rank: <i>{$ACCOUNT_INFO['Rank']}</i></text>
-						<space></space>
-						<text>Status: <i>{$ACCOUNT_INFO['Status']}</i></text>
-						<space></space>
-						<text>Age: <i>{$ACCOUNT_INFO['Age']}</i></text>
-					</flex_rows>	
+					<flex_columns>
+						<flex_rows class = 'noflex' style = 'min-width: fit-content;'>
+							<text>Username: <i>{$LOGIN_STATUS['Username']}</i></text>
+							<space></space>
+							<text>Rank: <i>{$LOGIN_STATUS['Rank']}</i></text>
+						</flex_rows>
+						<space_xl></space_xl>
+						<flex_rows>
+							<text>Status: <i>{$LOGIN_STATUS['Status']}</i></text>
+							<space></space>
+							<text>Age: <i>{$LOGIN_STATUS['Age']}</i></text>
+							<space></space>
+							<text>Timezone: <i>UTC{$LOGIN_STATUS['Timezone']}</i></text>
+						</flex_rows>
+					</flex_columns>
 				</flex_columns>
 				<space></space>
-				<a href = 'https://sasakowski.space/Stc/Login/LogMeOut.php'>Log out</a>
+				<text><a href = 'https://sasakowski.space/Static/Login/LogMeOut.php'>Log out</a></text>
 				";
 			}
 			?>
@@ -60,7 +66,7 @@ $ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
 		<flex_rows>
 			<text_l>Theme</text_l>
 			<space></space>
-			<text>Currently selected: <i><?php echo \Internals\Stc\Style\GetTheme(); ?></i></text>
+			<text>Currently selected: <i><?php echo \Internals\Style\GetTheme(); ?></i></text>
 			<space></space>
 			<flex_columns style = "column-gap: 1vw;">
 				<text>Selection:</text>
@@ -77,7 +83,7 @@ $ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
 		<flex_rows>
 			<text_l>Text Size</text_l>
 			<space></space>
-			<text>Current value: <i><?php echo \Internals\Stc\Style\GetTextSize(); ?></i></text>
+			<text>Current value: <i><?php echo \Internals\Style\GetTextSize(); ?></i></text>
 			<space></space>
 			<flex_columns style = "column-gap: 1vw;">
 				<text>Selection:</text>
@@ -94,7 +100,7 @@ $ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
 		<flex_rows>
 			<text_l>Alternate Theme <i>(AltTheme)</i></text_l>
 			<space></space>
-			<text>Currently selected: <i><?php echo \Internals\Stc\Style\GetAltTheme(); ?></i></text>
+			<text>Currently selected: <i><?php echo \Internals\Style\GetAltTheme(); ?></i></text>
 			<space></space>
 			<flex_columns style = "column-gap: 1vw;">
 				<text>Selection:</text>
@@ -120,7 +126,7 @@ $ACCOUNT_INFO = \Internals\Stc\Accounts\GetAccountInfo();
 		<flex_rows>
 			<text_l>Notes</text_l>
 			<space></space>
-			<text>This website utilizes cookies to make these settings work. Read the <a href = "https://sasakowski.space/Stc/Footer/CookiePolicy.php">Cookie Policy</a>.</text>
+			<text>This website utilizes cookies to make these settings work. Read the <a href = "https://sasakowski.space/Static/CookiePolicy.php">Cookie Policy</a>.</text>
 			<space_s></space_s>
 			<text>The new settings might only apply after a refresh <i>(if on a computer: press F5)</i>.</text>
 		</flex_rows>

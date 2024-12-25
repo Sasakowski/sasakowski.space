@@ -1,4 +1,4 @@
-<?php namespace Internals\Stc\Style;
+<?php namespace Internals\Style;
 
 function Init() {
 	$ECHO = "";
@@ -10,10 +10,10 @@ function Init() {
 
 	// Text size
 	$ECHO .= "<style>:root { --textPHP: {$TEXT_SIZE}vh; }</style>";
-	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/Master.css'>";
+	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Static/Stylesheets/Master.css'>";
 
 	// Theme
-	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Stc/Stylesheets/{$THEME}.css'>";
+	$ECHO .= "<link rel = 'stylesheet' href = 'https://sasakowski.space/Static/Stylesheets/{$THEME}.css'>";
 	
 	return $ECHO;
 }

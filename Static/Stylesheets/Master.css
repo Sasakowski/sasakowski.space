@@ -14,6 +14,11 @@
 	--text_l: calc(var(--text) * var(--goldenratio));
 	--text_xl: calc(var(--text_l) * var(--goldenratio));
 	--text_xxl: calc(var(--text_xl) * var(--goldenratio));
+
+	--superorchestrator: #C000FF;
+	--orchestrator: #FF8000;
+	--author: #00C0FF;
+	--reader: #C0FF00;
 }
 @media (orientation: landscape) {
 	:root {
@@ -44,11 +49,13 @@ flex_columns, flex_rows {
 	display: flex;
 	justify-content: flex-start;
 	flex: 1;
+	flex-wrap: wrap;
 }
 flex_columns { flex-direction: row; }
 flex_rows { flex-direction: column; }
 flex_columns.noflex, flex_rows.noflex { flex: 0; }
 flex_columns.hugright, flex_rows.hugright { justify-content: flex-end; }
+space_amap.noflex { flex: 0; }
 
 block, block2, block3 {
 	border-radius: 1vh;
@@ -103,6 +110,10 @@ quote::before { content: "„"; }
 quote::after { content: "“"; }
 input, select, textarea { font-size: var(--text); font-family: Bahnschrift; }
 
+.superorchestrator { color: var(--superorchestrator); }
+.orchestrator { color: var(--orchestrator); }
+.author { color: var(--author); }
+.reader { color: var(--reader); }
 
 @media (orientation: portrait) {
 	body {
