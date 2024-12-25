@@ -31,16 +31,17 @@ $LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
 			if ($LOGIN_STATUS["Login"] === 0) {
 				echo "<a href = 'https://sasakowski.space/Static/Login/Login.php'>Not logged in.</a>";
 			} else {
-				$PFP = \Internals\Accounts\GetAccountFilePath($LOGIN_STATUS['Username'], "PFP.png");
+				$PFP = \Internals\Accounts\GetAccountFilePath($LOGIN_STATUS["Username"], "PFP.png");
+				$RANK_LC = strtolower($LOGIN_STATUS["Rank"]);
 
 				echo "<flex_columns>
-					<img src = '{$PFP}' style = 'max-width: 128px; background-color: black; border: 0.2vw solid white; border-radius: 32%;'>
+					<img src = '$PFP' style = 'max-width: 128px; background-color: black; border: 0.2vw solid white; border-radius: 32%;'>
 					<space_l></space_l>
 					<flex_columns>
 						<flex_rows class = 'noflex' style = 'min-width: fit-content;'>
 							<text>Username: <i>{$LOGIN_STATUS['Username']}</i></text>
 							<space></space>
-							<text>Rank: <i>{$LOGIN_STATUS['Rank']}</i></text>
+							<text>Rank: <i class = '$RANK_LC'>{$LOGIN_STATUS['Rank']}</i></text>
 						</flex_rows>
 						<space_xl></space_xl>
 						<flex_rows>
