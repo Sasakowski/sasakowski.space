@@ -60,7 +60,7 @@ input { font-size: var(--text); }
 
 <?php
 // Load the comments and associated metadata
-$NEW_TIMEZONE = "UTC" . \Internals\Accounts\GetLoginStatus()["Timezone"];
+$NEW_TIMEZONE = \Internals\Accounts\GetLoginStatus()["Timezone"];
 
 $DB = \Internals\MySQL\Read("SELECT `Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD'");
 for ($i = 0; $i < count($DB); $i++) {
