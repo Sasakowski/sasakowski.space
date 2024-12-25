@@ -111,7 +111,7 @@ for (let i = 0; i < COMMENTS.length; i++) {
 			<text_s>${DATE}</text_s>
 		</flex_columns>
 		<space></space>
-		<block3 class = 'comment'>${COMMENT}</block3>
+		<block3 class = 'comment'><text>${COMMENT}</text></block3>
 	</flex_rows></block2>`;
 
 	BLOCK.innerHTML += COMMENT_TEMPLATE;
