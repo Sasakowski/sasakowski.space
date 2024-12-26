@@ -2,29 +2,21 @@
 <html>
 
 <?php
-// Board URL parameter specifies the board to view
-if (!isset($_GET["Board"])) {
-	echo "Board parameter is missing. <a href = 'Forum.php'>Go back.</a>";
+// Load the board
+$BOARD = isset($_GET["Board"]) ? $_GET["Board"] : null;
+if ($BOARD === null) {
+	echo "No board given.<br><br>
+	<a href = 'Forum.php'>Go back.</a>";
 	exit();
 }
-$BOARD = $_GET["Board"];
-
-// Find out if the board actually exists to prevent PHP shitting itself later down the line
-$FOUND_BOARD = false;
-$BOARDS = \Internals\MySQL\Read("SELECT * FROM `forum_boards`");
-foreach ($BOARDS as $V) {
-	if ($V["Board"] === $BOARD) {
-		$FOUND_BOARD = true;
-		break;
-	}
-}
-if (!$FOUND_BOARD) {
+// Check wether this board actually exists
+$DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_boards` WHERE `Board` = '$BOARD'");
+if (empty($DB)) {
 	echo "Board <i>$BOARD</i> doesn't exist.<br><br>
 	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
-
-// Check wether the user has access to this board (viewpermission)
+// Check wether the user has the clearance to view this board
 $LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
 if ($LOGIN_STATUS["Login"] === 0) {
 	echo "You're not logged in.<br><br>
@@ -33,12 +25,19 @@ if ($LOGIN_STATUS["Login"] === 0) {
 }
 $DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '{$LOGIN_STATUS['Username']}'");
 if (empty($DB)) {
-	echo "You don't have the permissions to view this board. <a href = 'Forum.php'>Go back.</a>";
+	echo "You don't have the clearance to view this board.<br><br>
+	<a href = 'Forum.php'>Go back.</a>";
 	exit();
 }
 
 // At this point, the user has full clearance to view this board
+// $BOARD -> The name of the board
+// $LOGIN_STATUS -> User info
 ?>
+
+
+
+<!-- HEADER -->
 
 <?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
 
@@ -54,28 +53,37 @@ if (empty($DB)) {
 
 <space_xl></space_xl>
 
-<?php
-// Load the comments and associated metadata
-$NEW_TIMEZONE = \Internals\Accounts\GetLoginStatus()["Timezone"];
 
-$DB = \Internals\MySQL\Read("SELECT `Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD'");
+
+<!-- BODY -->
+
+<style>
+.edit { text-decoration: none; }
+</style>
+
+<?php
+// Load the comments and adjust the timezones while at it
+$TIMEZONE_OF_USER = $LOGIN_STATUS["Timezone"];
+$DB = \Internals\MySQL\Read("SELECT `ID`,`Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD'");
 for ($i = 0; $i < count($DB); $i++) {
-	$ADJUSTED_DATETIME = \Internals\Time\UTCOffsetFromWebserver($DB[$i]["Date"], $NEW_TIMEZONE);
-	$DB[$i]["Date"] = $ADJUSTED_DATETIME . ", $NEW_TIMEZONE";
+	$ADJUSTED_TIMEZONE = \Internals\Time\UTCOffsetFromWebserver($DB[$i]["Date"], $TIMEZONE_OF_USER);
+	$DB[$i]["Date"] = "$ADJUSTED_TIMEZONE, $TIMEZONE_OF_USER";
 }
 $COMMENTS = json_encode($DB);
 
+// Load the ranks of all involved users
 $USERS = [];
-foreach ($DB as $C) {
-	$USERNAME = $C["Username"];
+foreach ($DB as $COMMENT) {
+	$USERNAME = $COMMENT["Username"];
 	if(in_array($USERNAME, array_keys($USERS))) { continue; }
 	
-	$DB = \Internals\MySQL\Read("SELECT `Rank` FROM `accounts` WHERE `Username` = '$USERNAME'");
-	$USERS[$USERNAME] = $DB[0]["Rank"];
+	$_DB = \Internals\MySQL\Read("SELECT `Rank` FROM `accounts` WHERE `Username` = '$USERNAME'");
+	$USERS[$USERNAME] = $_DB[0]["Rank"];
 }
 $USERS = json_encode($USERS);
 
-echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS;</script>";
+// Submit the data to the frontend (display is done by JS)
+echo "<script>let COMMENTS = $COMMENTS; COMMENTS.reverse(); let USERS = $USERS; let THIS_USER = '{$LOGIN_STATUS["Username"]}';</script>";
 ?>
 
 <block><flex_rows ID = "COMMENT_BLOCK"></flex_rows></block>
@@ -85,31 +93,22 @@ let BLOCK = document.getElementById("COMMENT_BLOCK");
 
 for (let i = 0; i < COMMENTS.length; i++) {
 	const USERNAME = COMMENTS[i]["Username"];
-	let RANK = USERS[USERNAME];
-	switch (RANK) {
-		case "Superorchestrator":
-			RANK = "class = 'superorchestrator'>Superorchestrator";
-			break;
-		case "Orchestrator":
-			RANK = "class = 'orchestrator'>Orchestrator";
-			break;
-		case "Author":
-			RANK = "class = 'author'>Author";
-			break;
-		case "Reader":
-			RANK = "class = 'reader'>Reader";
-			break;
-	}
 	const DATE = COMMENTS[i]["Date"];
 	const COMMENT = COMMENTS[i]["Comment"];
+	const ID = COMMENTS[i]["ID"];
+	const RANK = USERS[USERNAME];
+	const RANK_CLASS = RANK.toLowerCase();
 
-	let COMMENT_TEMPLATE = `<block2><flex_rows>
+	const EDIT = USERNAME == THIS_USER ? `<space></space><text title = 'Edit this comment.'><a href = 'Edit.php?ID=${ID}' class = 'edit'>✏️</a></text>` : "";
+
+	const COMMENT_TEMPLATE = `<block2><flex_rows>
 		<flex_columns class = 'center_v'>
-			<text_s ${RANK}</text_s>
+			<text_s class = '${RANK_CLASS}'> ${RANK}</text_s>
 			<space></space>
-			<text> ${USERNAME}</text>
+			<text>${USERNAME}</text>
 			<space></space>
 			<text_s>${DATE}</text_s>
+			${EDIT}
 		</flex_columns>
 		<space></space>
 		<block3 class = 'comment'><text>${COMMENT}</text></block3>
@@ -129,6 +128,10 @@ if (COMMENTS.length === 0) {
 </script>
 
 <space_xl></space_xl>
+
+
+
+<!-- FOOTER -->
 
 <block>
 	<flex_rows>

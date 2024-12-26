@@ -22,45 +22,10 @@ if (empty($DB)) {
 }
 
 // Check the comment itself
-if (strlen($COMMENT) > 500) { // The limit is actually 512, but just in case
-	echo "Your comment is too long.<br><br>
-	<a href = 'https://sasakowski.space/Forum/Board.php?Board=$BOARD'>Go back and try again</a>";
-	exit();
-}
-if (str_contains($COMMENT, "<") or str_contains($COMMENT, ">")) {
-	// Check for tags
-	$RESULT = [];
-	preg_match_all("/<[^>,\s]+/", $COMMENT, $RESULT);
-	$RESULT = $RESULT[0];
-	foreach ($RESULT as $R) {
-		$R = substr($R, 1); // Always the < (which is useless now)
-		if (!in_array($R, ["i","b","br","text_l","text_s", "/i", "/b", "/br", "/text_l", "/text_s"])) {
-			echo "Your comment contains a disallowed HTML tag (closing tags included). This failed the check: < $R<br><br>
-			<a href = 'https://sasakowski.space/Forum/Board.php?Board=$BOARD'>Go back and try again</a><br><br>
-			Allowed tags:<br>
-			- < i > and < /i ><br>
-			- < b > and < /b ><br>
-			- < br > and < /br ><br>
-			- < text_l > and < /text_l ><br>
-			- < text_s > and < /text_s ><br>
-			";
-			exit();
-		}
-	}
-	// Check for attributes
-	$RESULT = [];
-	preg_match_all("/[A-za-z0-9]+\s*\=/", $COMMENT, $RESULT);
-	$RESULT = $RESULT[0];
-	if (!empty($RESULT)) {
-		echo "Your comment contains an HTML attribute, which are completely disallowed. This failed the check: $RESULT[0]<br><br>
-		<a href = 'https://sasakowski.space/Forum/Board.php?Board=$BOARD'>Go back and try again</a>";
-		exit();
-	}
-}
-$COMMENT = str_replace(["\r\n","\n","\r"],"<br>", $COMMENT);
+\Internals\HTMLElements\CheckHTMLSubmission_Forum($COMMENT);
 
 // The user CAN comment on this board
-$COMMENT = str_replace("'", "\'", $COMMENT);
+$COMMENT = \Internals\HTMLElements\PrepareHTMLSubmissionForDB($COMMENT);
 \Internals\MySQL\Write("INSERT INTO `forum_comments` (`ID`,`Board`,`Username`,`Comment`,`Date`) VALUES (LAST_INSERT_ID(),'$BOARD','$USERNAME','$COMMENT',NOW())");
 
 \Internals\Redirect\Redirect("https://sasakowski.space/Forum/Board.php?Board=$BOARD");
