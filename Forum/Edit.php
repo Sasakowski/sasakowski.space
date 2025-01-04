@@ -35,7 +35,7 @@ if ($COMMENT[0]["Username"] !== $LOGIN_STATUS["Username"]) {
 <!-- FRONTEND -->
 
 <form action = "EditSubmit.php?ID=<?php echo $ID; ?>" method = "POST">
-<textarea name = "COMMENT" rows = 12 cols = 96 maxlength = 500 required><?php echo $_COMMENT; ?></textarea>
+<textarea name = "COMMENT" rows = 12 cols = 96 maxlength = 500 required><?php echo $COMMENT[0]["Comment"]; ?></textarea>
 <br><br>
 <input style = "font-size: 150%;" type = "submit" value = "Edit!">
 </form>
