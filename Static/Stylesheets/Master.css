@@ -1,5 +1,5 @@
 /* Declare site-global variables */
-@font-face { font-family: Bahnschrift; src: local("Bahnschrift"), url("https://sasakowski.space/Stc/Fonts/Bahnschrift.ttf") format("opentype"); }
+@font-face { font-family: Bahnschrift; src: local("Bahnschrift"), url("https://sasakowski.space/Static/Fonts/Bahnschrift.ttf") format("opentype"); }
 :root {
 	--goldenratio: 1.618033;
 	--silverratio: 2.414214;
