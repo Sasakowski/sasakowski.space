@@ -5,4 +5,4 @@ else { $THEME = $_GET["Theme"]; }
 \Internals\Cookies\Edit("Theme", $THEME);
 \Internals\Style\_RepairTheme();
 
-\Internals\Redirect\RedirectBack();
+\Internals\Redirect\Redirect("https://sasakowski.space/Static/Settings/Settings.php");

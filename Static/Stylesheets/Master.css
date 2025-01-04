@@ -114,6 +114,10 @@ input, select, textarea { font-size: var(--text); font-family: Bahnschrift; }
 .orchestrator { color: var(--orchestrator); }
 .author { color: var(--author); }
 .reader { color: var(--reader); }
+.background.superorchestrator { background-color: var(--superorchestrator); }
+.background.orchestrator { background-color: var(--orchestrator); }
+.background.author { background-color: var(--author); }
+.background.reader { background-color: var(--reader); }
 
 @media (orientation: portrait) {
 	body {
@@ -134,4 +138,20 @@ input, select, textarea { font-size: var(--text); font-family: Bahnschrift; }
 		body { font-variation-settings: "wght" 350, "wdth" 100; }
 		b { font-variation-settings: "wght" 700, "wdth" 100; }
 	}
+}
+
+.COLLAPSIBLE[data-collapsed=""] > *:not(.HEADER) { display: none; }
+.COLLAPSIBLE > .HEADER:hover, .COLLAPSIBLE > .HEADER:active {
+	color: var(--accent);
+}
+.COLLAPSIBLE > .HEADER:hover::before, .COLLAPSIBLE > .HEADER:active::before {
+	color: var(--accent);
+}
+.COLLAPSIBLE[data-collapsed=""] > .HEADER::before {
+	content: "📘 ";
+	filter: grayscale();
+}
+.COLLAPSIBLE:not([data-collapsed=""]) > .HEADER::before {
+	content: "📖 ";
+	filter: grayscale();
 }

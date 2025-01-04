@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html>
-
 <?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top();
 $IS_LIGHT_THEME = \Internals\Style\GetTheme() === "Light";
 $LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
@@ -132,8 +129,3 @@ $LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
 			<text>The new settings might only apply after a refresh <i>(if on a computer: press F5)</i>.</text>
 		</flex_rows>
 	</block2>
-
-<!--
-<body>
-	Sasakowski.space utilizes cookies to make these settings work. Another page of this website might need a refresh for the new settings to take effect.
-	<br>

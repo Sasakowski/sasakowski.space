@@ -9,4 +9,4 @@ if (($TEXT_SIZE - $SUBTRAHEND) < $MIN) {
 	\Internals\Cookies\Edit("TextSize", $TEXT_SIZE - $SUBTRAHEND);
 }
 
-\Internals\Redirect\RedirectBack();
+\Internals\Redirect\Redirect("https://sasakowski.space/Static/Settings/Settings.php");

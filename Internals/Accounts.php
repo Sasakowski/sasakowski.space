@@ -8,7 +8,7 @@ function GetAccountDirectoryPath($USERNAME) {
 		throw new OutOfBoundsException("Account {$USERNAME} not found.");
 	} else {
 		$USERNAME = $DB[0]["Username"];
-		return "https://sasakowski.space/StaticContents/Accounts/{$USERNAME}/";
+		return "https://sasakowski.space/Accounts/Content/{$USERNAME}/";
 	}
 }
 

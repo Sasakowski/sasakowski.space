@@ -10,4 +10,4 @@ if (($TEXT_SIZE + $BIGGER) >= $MAX) {
 	\Internals\Cookies\Edit("TextSize", $TEXT_SIZE + $ADDEND);
 }
 
-\Internals\Redirect\RedirectBack();
+\Internals\Redirect\Redirect("https://sasakowski.space/Static/Settings/Settings.php");

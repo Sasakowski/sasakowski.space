@@ -22,10 +22,18 @@ if (empty($DB)) {
 }
 
 // Check the comment itself
-\Internals\HTMLElements\CheckHTMLSubmission_Forum($COMMENT);
+$_ = \Internals\HTMLElements\CheckHTML($COMMENT, 500,
+	[], ["b","i","text_l","text_s"], [], [], [], [], false
+);
+if ($_[0] !== 1) {
+	echo "This comment failed to post. If you believe that this is an error write down the following:<br><br>
+	Code: $_[0]<br>
+	Failure: $_[1]<br><br>
+	<a href = 'Forum.php'>Go back</a>";
+	exit();
+}
 
 // The user CAN comment on this board
-$COMMENT = \Internals\HTMLElements\PrepareHTMLSubmissionForDB($COMMENT);
 \Internals\MySQL\Write("INSERT INTO `forum_comments` (`ID`,`Board`,`Username`,`Comment`,`Date`) VALUES (LAST_INSERT_ID(),'$BOARD','$USERNAME','$COMMENT',NOW())");
 
 \Internals\Redirect\Redirect("https://sasakowski.space/Forum/Board.php?Board=$BOARD");

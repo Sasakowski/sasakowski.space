@@ -6,7 +6,7 @@
 $BOARD = isset($_GET["Board"]) ? $_GET["Board"] : null;
 if ($BOARD === null) {
 	echo "No board given.<br><br>
-	<a href = 'Forum.php'>Go back.</a>";
+	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 // Check wether this board actually exists
@@ -26,7 +26,7 @@ if ($LOGIN_STATUS["Login"] === 0) {
 $DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '{$LOGIN_STATUS['Username']}'");
 if (empty($DB)) {
 	echo "You don't have the clearance to view this board.<br><br>
-	<a href = 'Forum.php'>Go back.</a>";
+	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 
@@ -35,40 +35,30 @@ if (empty($DB)) {
 // $LOGIN_STATUS -> User info
 ?>
 
-
-
-<!-- HEADER -->
-
 <?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
 
-<block>
-	<block2>
-		<flex_columns class = "center_v">
-			<text_l>Forum board: <i><?php echo $BOARD; ?></i></text_l>
-			<space_l></space_l>
-			<text><a href = "Forum.php">Go back.</a></text>
-		</flex_columns>
-	</block2>
-</block>
-
-<space_xl></space_xl>
-
-
-
-<!-- BODY -->
-
 <style>
-.edit { text-decoration: none; }
+.edit { text-decoration: none; font-style: normal; }
 </style>
 
 <?php
+// Comments are divided into blocks of 16
+$BLOCK = isset($_GET["Block"]) ? $_GET["Block"] : 1;
+if (!is_numeric($BLOCK) or $BLOCK <= 0) { $BLOCK = 1; }
+$BLOCK = ($BLOCK - 1) * 16;
+
 // Load the comments and adjust the timezones while at it
 $TIMEZONE_OF_USER = $LOGIN_STATUS["Timezone"];
-$DB = \Internals\MySQL\Read("SELECT `ID`,`Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD'");
+$DB = \Internals\MySQL\Read("SELECT `ID`,`Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD' ORDER BY `Date` DESC LIMIT 16 OFFSET $BLOCK");
 for ($i = 0; $i < count($DB); $i++) {
 	$ADJUSTED_TIMEZONE = \Internals\Time\UTCOffsetFromWebserver($DB[$i]["Date"], $TIMEZONE_OF_USER);
 	$DB[$i]["Date"] = "$ADJUSTED_TIMEZONE, $TIMEZONE_OF_USER";
 }
+
+// Split the mass of comments into blocks of 16, so that the available pages can be correctly displayed
+$DB_COUNT = \Internals\MySQL\Read("SELECT `ID` FROM `forum_comments` WHERE `Board` = '$BOARD'");
+$BLOCKCOUNT = ceil(count($DB_COUNT) / 16) + 1;
+
 $COMMENTS = json_encode($DB);
 
 // Load the ranks of all involved users
@@ -83,8 +73,52 @@ foreach ($DB as $COMMENT) {
 $USERS = json_encode($USERS);
 
 // Submit the data to the frontend (display is done by JS)
-echo "<script>let COMMENTS = $COMMENTS; COMMENTS.reverse(); let USERS = $USERS; let THIS_USER = '{$LOGIN_STATUS["Username"]}';</script>";
+echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS; let THIS_USER = '{$LOGIN_STATUS["Username"]}';</script>";
 ?>
+
+<block><flex_rows>
+
+	<block2>
+		<flex_columns class = "center_h center_v">
+			<text_l>Forum board: <i><?php echo $BOARD; ?></i></text_l>
+			<space_l></space_l>
+			<text><a href = "Forum.php">Go back</a></text>
+		</flex_columns>
+	</block2>
+		
+	<space_l></space_l>
+
+	<block2>
+		<form method = "POST" action = "Post.php">
+			<flex_columns>
+				
+				<textarea rows = 4 cols = 64 name = "Comment" placeholder = "Something!" maxlength = 500 required></textarea>
+				<input type = "text" name = "Board" value = "<?php echo $BOARD; ?>" hidden required>
+				
+				<space_l></space_l>
+				
+				<flex_rows class = "noflex" style = "min-width: fit-content; justify-content: center;">
+					<input type = "submit" value = "Post!">
+					<space_l></space_l>
+					<a href = "https://sasakowski.space/Static/StylizationGuide.php" target = "_blank">Stylization Guide</a>
+				</flex_rows>
+
+				<space_l></space_l>
+
+				<flex_columns style = "gap: var(--space);">
+					<?php
+					for ($i = 1; $i < $BLOCKCOUNT; $i += 1) {
+						echo "<a href = '?Board=$BOARD&Block=$i'>$i</a>";
+					}
+					?>
+				</flex_columns>
+
+			</flex_columns>
+		</form>
+	</block2>
+</flex_rows></block>
+
+<space_l></space_l>
 
 <block><flex_rows ID = "COMMENT_BLOCK"></flex_rows></block>
 
@@ -99,7 +133,8 @@ for (let i = 0; i < COMMENTS.length; i++) {
 	const RANK = USERS[USERNAME];
 	const RANK_CLASS = RANK.toLowerCase();
 
-	const EDIT = USERNAME == THIS_USER ? `<space></space><text title = 'Edit this comment.'><a href = 'Edit.php?ID=${ID}' class = 'edit'>✏️</a></text>` : "";
+	const EDIT_COMMENT = USERNAME == THIS_USER ? `<space></space><text title = 'Edit this comment.'><a href = 'Edit.php?ID=${ID}' class = 'edit'>✏️</a></text>` : "";
+	const DELETE_COMMENT = USERNAME == THIS_USER ? `<space></space><text title = 'Delete this comment.'><a href = 'Delete.php?ID=${ID}' class = 'edit'>🗑️</a></text>` : "";
 
 	const COMMENT_TEMPLATE = `<block2><flex_rows>
 		<flex_columns class = 'center_v'>
@@ -108,7 +143,8 @@ for (let i = 0; i < COMMENTS.length; i++) {
 			<text>${USERNAME}</text>
 			<space></space>
 			<text_s>${DATE}</text_s>
-			${EDIT}
+			${EDIT_COMMENT}
+			${DELETE_COMMENT}
 		</flex_columns>
 		<space></space>
 		<block3 class = 'comment'><text>${COMMENT}</text></block3>
@@ -126,40 +162,3 @@ if (COMMENTS.length === 0) {
 	BLOCK.classList.add("center_h");
 }
 </script>
-
-<space_xl></space_xl>
-
-
-
-<!-- FOOTER -->
-
-<block>
-	<flex_rows>
-		<block2>
-			<form method = "POST" action = "Post.php" style = "margin-bottom: 0px;">
-				<flex_columns class = "center_v">
-					<textarea rows = 4 cols = 64 name = "Comment" placeholder = "Something!" maxlength = 500 required></textarea>
-					<input type = "text" name = "Board" value = "<?php echo $BOARD; ?>" hidden required>
-					<space_l></space_l>
-					<input type = "submit" style = "height: fit-content;" value = "Post!">
-				</flex_columns>
-			</form>
-		</block2>
-		<space_l></space_l>
-		<block2>
-			<flex_rows>
-				<text>Stylizations are done using raw HTML:</text>
-				<space></space>
-				<flex_columns class = "center_v">
-					<text>&lt;b&gt;<b>Bold</b>&lt;/b&gt;</text>
-					<space></space>
-					<text>&lt;i&gt;<i>Italic</i>&lt;/i&gt;</text>
-					<space></space>
-					<text>&lt;text_l&gt;<text_l>Larger</text_l>&lt;/text_l&gt;</text>
-					<space></space>
-					<text>&lt;text_s&gt;<text_s>Smaller</text_s>&lt;/text_s&gt;</text>
-				</flex_columns>
-			</flex_rows>
-		</block2>
-	</flex_rows>
-</block>

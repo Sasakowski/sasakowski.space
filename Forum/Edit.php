@@ -22,12 +22,12 @@ if ($LOGIN_STATUS["Login"] === 0) {
 $COMMENT = \Internals\MySQL\Read("SELECT `Username`,`Comment` FROM `forum_comments` WHERE `ID` = '$ID'");
 if (empty($COMMENT)) {
 	echo "Comment doesn't exist.<br><br>
-	<a href = 'Forum.php'>Go back.</a>";
+	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 if ($COMMENT[0]["Username"] !== $LOGIN_STATUS["Username"]) {
 	echo "You're not the owner of this comment.<br><br>
-	<a href = 'Forum.php'>Go back.</a>";
+	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 $_COMMENT = str_replace("<br>", "\n", $COMMENT[0]["Comment"]); 
@@ -41,4 +41,4 @@ $_COMMENT = str_replace("<br>", "\n", $COMMENT[0]["Comment"]);
 <input style = "font-size: 150%;" type = "submit" value = "Edit!">
 </form>
 
-<a href = 'Forum.php'>Go back.</a>
+<a href = 'Forum.php'>Go back</a>
