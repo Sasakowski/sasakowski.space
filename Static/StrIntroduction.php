@@ -28,12 +28,12 @@
 					}
 					@keyframes LOGO_ROTATE { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 					</style>
-					<img style = "height: 33vh; filter:drop-shadow();" id = "LOGO_ROTATE" src = "StrimaginusLogo.svg" class = "SHADOW">
+					<img style = "width: 16vw; filter:drop-shadow();" id = "LOGO_ROTATE" src = "StrimaginusLogo.svg" class = "SHADOW">
 					<space_l></space_l>
-					<img style = "height: 33vh;" src = "StrimaginusStylizedSlogan.svg" class = "SHADOW">
+					<img style = "width: 16vw;" src = "StrimaginusStylizedSlogan.png" class = "SHADOW">
 				</flex_columns>
 				<space_l></space_l>
-				<img style = "height: calc(33vh/2);" src = "StrimaginusStylizedName.svg" class = "SHADOW">
+				<img style = "width: 32vw; margin-left: auto; margin-right: auto;" src = "StrimaginusStylizedName.png" class = "SHADOW">
 			</flex_rows>
 			<space_l></space_l>
 		</flex_rows></block2>
