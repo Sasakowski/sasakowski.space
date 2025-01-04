@@ -30,7 +30,6 @@ if ($COMMENT[0]["Username"] !== $LOGIN_STATUS["Username"]) {
 	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
-$_COMMENT = str_replace("<br>", "\n", $COMMENT[0]["Comment"]); 
 ?>
 
 <!-- FRONTEND -->
