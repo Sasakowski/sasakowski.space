@@ -93,7 +93,7 @@ for ($i = 0; $i < count($DB); $i += 1) {
 $_DB = \Internals\MySQL\Read("SELECT `ID` FROM `forum_comments` WHERE `Board` = '$BOARD'");
 $BLOCKS = ceil(count($_DB) / 16);
 
-if ($BLOCK > ($BLOCKS * 16) - 1) {
+if (count($_DB) > 0 and $BLOCK > ($BLOCKS * 16) - 1) {
 	echo "<block><flex_rows class = 'center_h'>
 		<text_l>Block parameter is outside the available range.</text_l>
 		<space></space>
