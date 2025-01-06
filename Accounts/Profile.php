@@ -2,6 +2,14 @@
 $PROFILE = isset($_GET["Profile"]) ? $_GET["Profile"] : "";
 \Internals\XSS\DisallowMarkup($PROFILE);
 
+if ($PROFILE === "" and $__GLOBAL__LOGIN["Login"] === 0) {
+	echo "<!DOCTYPE html><html>
+	You're not logged in and there's no profile to load.<br><br>
+	<a href = 'RegisteredAccounts.php'>Registered accounts</a>
+	";
+	exit();
+}
+
 // If no PROFILE is given, load the user's own profile.
 try {
 
