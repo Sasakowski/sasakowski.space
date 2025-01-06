@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
+<?php \Internals\HTML\Head(); \Internals\HTML\Top(); ?>
 
 <block>
 
@@ -24,7 +24,7 @@
 			</flex_columns>
 			<space></space>
 			<flex_columns>
-				<a href = "https://sasakowski.space/Static/Settings/Settings.php">Settings</a>
+				<a href = "https://sasakowski.space/Static/DisplaySettings/Settings.php">Display settings</a>
 				<space_xl></space_xl>
 				<a href = "https://sasakowski.space/Static/CookiePolicy.php">Cookie Policy</a>
 			</flex_columns>
@@ -37,14 +37,14 @@
 		<flex_rows>
 			<text_l>Strimaginus Project</text_l>
 			<space></space>
-			<flex_columns>
-				<a href = "https://sasakowski.space/Static/StrIntroduction.php">Introduction</a>
+			<!-- <flex_columns>
+				<a href = "https://sasakowski.space/Strimaginus/Introduction.php">Introduction</a>
 			</flex_columns>
-			<space></space>
+			<space></space> -->
 			<flex_columns>
-				<a href = "https://sasakowski.space/Accounts/Profile.php">Your Profile</a>
+				<a href = "https://sasakowski.space/Accounts/Profile.php">Your profile</a>
 				<space_xl></space_xl>
-				<a href = "https://sasakowski.space/Accounts/Accounts.php">Registered Accounts</a>
+				<a href = "https://sasakowski.space/Accounts/RegisteredAccounts.php">Registered accounts</a>
 			</flex_columns>
 			<space></space>
 			<flex_columns>

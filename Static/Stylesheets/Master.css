@@ -110,14 +110,14 @@ quote::before { content: "„"; }
 quote::after { content: "“"; }
 input, select, textarea { font-size: var(--text); font-family: Bahnschrift; }
 
-.superorchestrator { color: var(--superorchestrator); }
-.orchestrator { color: var(--orchestrator); }
-.author { color: var(--author); }
-.reader { color: var(--reader); }
-.background.superorchestrator { background-color: var(--superorchestrator); }
-.background.orchestrator { background-color: var(--orchestrator); }
-.background.author { background-color: var(--author); }
-.background.reader { background-color: var(--reader); }
+.rank_so { color: var(--superorchestrator); }
+.rank_o { color: var(--orchestrator); }
+.rank_a { color: var(--author); }
+.rank_r { color: var(--reader); }
+.rank_so_background { background-color: var(--superorchestrator); }
+.rank_o_background { background-color: var(--orchestrator); }
+.rank_a_background { background-color: var(--author); }
+.rank_r_background { background-color: var(--reader); }
 
 @media (orientation: portrait) {
 	body {

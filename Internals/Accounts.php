@@ -2,55 +2,113 @@
 
 use OutOfBoundsException;
 
-function GetAccountDirectoryPath($USERNAME) {
-	$DB = \Internals\MySQL\Read("SELECT `Username` FROM `accounts` WHERE `Username` = '{$USERNAME}'");
+// Get the URL of an account's directory
+function GetDirectoryURL($USERNAME) {
+
+	$DB = \Internals\MySQL\Read("SELECT `Username` FROM `accounts` WHERE `Username` = '$USERNAME'");
 	if (empty($DB)) {
-		throw new OutOfBoundsException("Account {$USERNAME} not found.");
+		
+		throw new OutOfBoundsException("Account not found.");
+	
 	} else {
+
 		$USERNAME = $DB[0]["Username"];
-		return "https://sasakowski.space/Accounts/Content/{$USERNAME}/";
+		return "https://sasakowski.space/Accounts/Contents/$USERNAME/";
 	}
 }
 
-function GetAccountFilePath($USERNAME, $FILE) {
-	$PATH = GetAccountDirectoryPath($USERNAME);
-	$POINTER = $PATH . $FILE;
-	if (file_exists($POINTER)) { throw new OutOfBoundsException("File {$FILE} not found."); }
-	return $POINTER;
+// Get the URL of an account's file (for an src/href attribute or something)
+function GetFileURL($USERNAME, $FILE) {
+	return GetDirectoryURL($USERNAME) . $FILE;
 }
 
-function GetLoginStatus() {
-	// A session cookie must be there
-	$SESSION_KEY = \Internals\Cookies\Get("Session", "None");
-	if ($SESSION_KEY === "None") {
-		return ["Login" => 0, "Username" => "None", "Rank" => "None", "Status" => "None", "Age" => "None", "Timezone" => "None"];
-	}
-
-	// An entry inside session_keys must be there
-	$DB = \Internals\MySQL\Read("SELECT `Username` FROM `session_keys` WHERE `Session Key` = '$SESSION_KEY'");
-	if (empty($DB)) {
-		return ["Login" => -1, "Username" => "None", "Rank" => "None", "Status" => "None", "Age" => "None", "Timezone" => "None"];
-	}
-
-	// Get account info
-	$USERNAME = $DB[0]["Username"];
+// Get the data of any account
+function GetInfo($USERNAME) {
+	
 	$DB = \Internals\MySQL\Read("SELECT `Rank`,`Status`,`Age`,`Timezone` FROM `accounts` WHERE `Username` = '$USERNAME'");
-	$RANK = $DB[0]["Rank"];
-	$STATUS = $DB[0]["Status"];
-	$AGE = $DB[0]["Age"];
-	$TIMEZONE = $DB[0]["Timezone"];
-	return ["Login" => 1, "Username" => $USERNAME, "Rank" => $RANK, "Status" => $STATUS, "Age" => $AGE, "Timezone" => $TIMEZONE];
+	
+	if (empty($DB)) {
+		throw new OutOfBoundsException("Account not found.");
+	}
+
+	return [
+		"Username" => $USERNAME,
+		"Rank" => $DB[0]["Rank"],
+		"Status" => $DB[0]["Status"],
+		"Age" => $DB[0]["Age"],
+		"Timezone" => $DB[0]["Timezone"],
+	];
 }
 
-function GetAccountInfo($USERNAME) {
-	$DB = \Internals\MySQL\Read("SELECT `Rank`,`Status`,`Age`,`Timezone` FROM `accounts` WHERE `Username` = '{$USERNAME}'");
-	if (empty($RESULT)) {
-		throw new OutOfBoundsException("Account {$USERNAME} not found.");
+
+
+// Only relevant to Prepend.php
+function GetLogin() {
+
+	$SESSION_KEY = \Internals\Cookies\Get("SessionKey", null);
+	// TODO: disallow SQL
+
+	if ($SESSION_KEY === null) {
+		
+		// The session key doesn't exist, so make no further efforts to log the user in.
+		return [
+			"Login" => 0, // 0 means no session key exists.
+			"Username" => "None",
+			"Rank" => "None",
+			"Status" => "None",
+			"Age" => "None",
+			"Timezone" => "None",
+		];
+
 	} else {
+
+		// A session key does exist, so continue the effort.
+		$DB = \Internals\MySQL\Read("SELECT `Username` FROM `session_keys` WHERE `Session Key` = '$SESSION_KEY'");
+
+		if (empty($DB) and !str_starts_with($GLOBALS["__GLOBAL__URL"], "/Static/Login/")) {
+			echo "<!DOCTYPE html><html>
+			Your session key has expired. Log in again to get a new key.<br>
+			(If you edited it, change it back and it should just work again.)<br><br>
+			<a href = 'https://sasakowski.space/Static/Login/Login.php'>Log in</a>
+			";
+			exit();
+		}
+
+		$USERNAME = $DB[0]["Username"];
+
+		// Now that we have a username, load the user's account data.
+		$DB = \Internals\MySQL\Read("SELECT `Rank`,`Status`,`Age`,`Timezone` FROM `accounts` WHERE `Username` = '$USERNAME'");
+		
 		$RANK = $DB[0]["Rank"];
 		$STATUS = $DB[0]["Status"];
 		$AGE = $DB[0]["Age"];
 		$TIMEZONE = $DB[0]["Timezone"];
-		return ["Username" => $USERNAME, "Rank" => $RANK, "Status" => $STATUS, "Age" => $AGE, "Timezone" => $TIMEZONE];
+
+		// Check wether the account should be able to log in
+		if ($STATUS === "Inactive") {
+			
+			echo "<!DOCTYPE html><html>
+			Your account is inactive. Please get into contact with this website's administration to activate it again.";
+			exit();
+
+		} elseif ($STATUS === "Banned") {
+
+			echo "<!DOCTYPE html><html>
+			Your account is banned. You most likely know why.<br><br>
+			Before you go, I'd like to say that <audio src = 'https://sasakowski.space/Static/Login/Ylvis.ogg' controls loop>
+			";
+			exit();
+		}
+
+		return [
+			"Login" => 1, // 1 means successful log-in.
+			"Username" => $USERNAME,
+			"Rank" => $RANK,
+			"Status" => $STATUS,
+			"Age" => $AGE,
+			"Timezone" => $TIMEZONE,
+		];
 	}
 }
+
+?>

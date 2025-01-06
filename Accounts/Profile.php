@@ -1,44 +1,71 @@
+<?php
+$PROFILE = isset($_GET["Profile"]) ? $_GET["Profile"] : "";
+\Internals\XSS\DisallowMarkup($PROFILE);
+
+// If no PROFILE is given, load the user's own profile.
+try {
+
+	// "" means view-my-own-profile.
+	if ($PROFILE !== "") {
+		$PROFILE = \Internals\Accounts\GetInfo($PROFILE);
+	} else {
+		$PROFILE = $__GLOBAL__LOGIN;
+	}
+	
+} catch (Exception $E) {
+
+	echo "<!DOCTYPE><html>
+	Account not found.<br><br>
+	<a href = 'RegisteredAccounts.php'>Registered accounts</a>
+	";
+	exit();
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
-
-<?php
-
-$LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
-$PROFILE = (isset($_GET["Profile"])) ? $_GET["Profile"] : null;
-
-if ($LOGIN_STATUS["Login"] === 0 and $PROFILE === null) {
-	echo "<block class = 'center_h'>
-	<text_l>Either log in to view your own profile or select one to view from <a href = 'Accounts.php'>here</a>.</text_l>
-	</block>";
-	exit();
-}
-
-if ($PROFILE === null) {
-	$DISPLAY_ACCOUNT = $LOGIN_STATUS;
-} else {
-	try {
-		\Internals\Accounts\GetAccountDirectoryPath($PROFILE);
-		$DISPLAY_ACCOUNT = \Internals\Accounts\GetAccountInfo($PROFILE);
-	} catch (Exception $E) {
-		echo "<block class = 'center_h'>
-		<text_l>Account not found.</text_l>
-		</block>";
-		exit();
-	}
-}
-
-?>
+<?php \Internals\HTML\Head(); \Internals\HTML\Top(); ?>
 
 <block>
 	<flex_rows>
 		<block2>
-			<flex_columns class = "center_h">
-				<text_l class = "<?php echo strtolower($DISPLAY_ACCOUNT["Rank"]); ?>"><?php echo $DISPLAY_ACCOUNT["Rank"]; ?></text_l>
-				<space_l></space_l>
-				<text_l><?php echo $DISPLAY_ACCOUNT["Username"]; ?></text_l>
+			<flex_columns class = "center_h center_v">
+				<?php
+				$RANK_CSS = \Internals\HTML\RankToCSS($PROFILE["Rank"]);
+				$PFP = \Internals\Accounts\GetFileURL($PROFILE["Username"], "PFP.png");
+
+				if ($PROFILE["Username"] === $__GLOBAL__LOGIN["Username"]) {
+					
+					// The user is viewing their own profile.
+					echo "<text_l>Welcome,</text_l>
+					<space></space>
+					<text_l class = '$RANK_CSS'><b>{$PROFILE["Rank"]}</b></text_l>
+					<space></space>
+					<text_l><i>{$PROFILE["Username"]}!</i></text_l>
+					<space_l></space_l>
+					<img src = '$PFP' style = 'height: var(--text_xl); border-radius: var(--text_s);'>
+					";
+				
+
+				} else {
+
+					// The user is viewing someone else's profile.
+					echo "<text_l class = '$RANK_CSS'><b>{$PROFILE["Rank"]}</b></text_l>
+					<space></space>
+					<text_l>{$PROFILE["Username"]}</text_l>
+					<space_l></space_l>
+					<img src = '$PFP' style = 'height: var(--text_xl); border-radius: var(--text_s);'>
+					";
+				}
+				?>
 			</flex_columns>
+		</block2>
+
+		<space_xl></space_xl>
+
+		<block2 class = "center_h">
+			<text_l>The profile feature isn't yet implemented.</text_l>
 		</block2>
 
 	</flex_rows>

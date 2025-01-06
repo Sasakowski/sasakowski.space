@@ -1,8 +1,12 @@
 <?php
+// Any variable declared here is accessable to all other files
+// Hence the __GLOBAL__ prefix
 
-$___MAINTENANCE_MODE = false;
-if ($___MAINTENANCE_MODE) {
-	echo "
+
+// First is maintenance mode
+$__GLOBAL__MAINTENANCE_MODE = false;
+if ($__GLOBAL__MAINTENANCE_MODE) {
+	echo "<!DOCTYPE html><html>
 	<head>
 		<title>Sasakowski.space</title>
 		<meta name = 'robots' content = 'noindex, nofollow'/>
@@ -23,54 +27,43 @@ if ($___MAINTENANCE_MODE) {
 	exit();
 }
 
-// Internals is a special directory that contains the site's fundamental code in the form of PHP files.
-// A direct view of these files would cause PHP to run into errors, the most likely error being 'cannot redeclare this function'.
-// Try it out yourself! https://sasakowski.space/Internals/Master/Prepend.php - you'll be greeted by a pallas' cat.
-$URI = $_SERVER["REQUEST_URI"];
-if ( str_starts_with($URI, "/Internals") ) {
-	echo "<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 90%;'><br>";
+
+// Internals is a special directory that contains vital code of this website.
+// Viewing any .php file manually inside this directory will cause PHP-errors.
+$__GLOBAL__URL = $_SERVER["REQUEST_URI"];
+if (str_starts_with($__GLOBAL__URL, "/Internals/")) {
+	echo "<!DOCTYPE html><html>
+	<body style = 'margin: 0px;'>
+		<img src = 'https://i.huffpost.com/gen/2691324/images/o-PALLAS-CAT-facebook.jpg' style = 'width: 99vw;'>";
 	exit();
 }
 
-require_once(__DIR__ . "/MySQL.php");
-require_once(__DIR__ . "/Cookies.php");
-require_once(__DIR__ . "/Redirect.php");
-require_once(__DIR__ . "/Accounts.php");
-require_once(__DIR__ . "/Favicons.php");
-require_once(__DIR__ . "/Style.php");
-require_once(__DIR__ . "/HTMLElements.php");
-require_once(__DIR__ . "/Time.php");
 
-$LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
-if ($LOGIN_STATUS["Login"] === -1 and !str_starts_with($_SERVER["REQUEST_URI"], "/Static/Login")) {
-	echo "Your session key has expired.<br><br>
-	<a href = 'https://sasakowski.space/Static/Login/Login.php'>Log in again</a>";
-	exit();
-}
+// Import the other internals, which are also globally usable
+require_once(__DIR__ . "/" . "Accounts.php"); // Allow interactions between the webserver and account data (of everyone).
+require_once(__DIR__ . "/" . "Cookies.php"); // Allow interactions between the webserver and the user's cookies.
+require_once(__DIR__ . "/" . "MySQL.php"); // Allow interactions between the webserver and the db.
+require_once(__DIR__ . "/" . "Redirect.php"); // Redirect the user. Also exit()s to stop the old script from continuing.
+require_once(__DIR__ . "/" . "UserStyleSettings.php"); // Allow interactions between the webserver and the user's style cookies.
+require_once(__DIR__ . "/" . "XSS.php"); // Functions to combat XSS (actually to verify user input).
+require_once(__DIR__ . "/" . "HTML.php"); // Mostly just large preset ECHOs that contain whole HTML segments.
+require_once(__DIR__ . "/" . "Time.php"); // Allow the webserver to juggle time and dates around.
 
-echo "<!DOCTYPE html><html>
-	<body id = 'NO_SCRIPT_BODY'><noscript id = 'NO_SCRIPT'>
-	<style src = 'https://sasakowski.space/Static/Stylesheets/Master.css'></style>
-	<style src = 'https://sasakowski.space/Static/Stylesheets/Void.css'></style>
-	<block style = 'z-index: 999; position: absolute; height: 98vh; width: 99vw; border-radius: 0px;'>
-		<flex_rows class = 'center_v'>
-			<space_xl></space_xl>
-			<text_xl>This website requires JavaScript to function.</text_xl>
-			<space_l></space_l>
-			<img style = 'height: 10vh;' src = 'https://www.nyan.cat/cats/original.gif'>
-			<space_l></space_l>
-			<audio src = 'https://www.nyan.cat/music/daft.ogg' controls>
-		</flex_rows>
-	</block>
-</noscript>
-<script src = 'https://sasakowski.space/Static/Collapsibles.js'></script>
-<script>
-document.addEventListener('readystatechange', function () {
-	if (document.readyState === 'interactive') {
-		document.getElementById('NO_SCRIPT').style.display = 'none';
-		document.getElementById('EVERYTHING').style.display = 'block';
-		PageInit();
-	}
-});
-</script><div id = 'EVERYTHING' style = 'display: none;'>
-";
+// Attempt to log the user in, then use the result array as a __GLOBAL__ variable.
+// Do NOT store the session key in a separate variable, to avoid leaking it by accident or XSS.
+$__GLOBAL__LOGIN = \Internals\Accounts\GetLogin();
+
+// Load the user's style (theme, alttheme, textsize) and store all settings as a __GLOBAL__ variable.
+// These functions verify and repair themselves (they're cookies) if given.
+$__GLOBAL__STYLE = [
+	"Theme" => \Internals\UserStyleSettings\Theme(),
+	"AltTheme" => \Internals\UserStyleSettings\AltTheme(),
+	"TextSize" => \Internals\UserStyleSettings\TextSize(),
+];
+
+// __GLOBAL__MAINTENANCE_MODE -> if the page is in maintenance mode (actually only false because execution stops if its true).
+// __GLOBAL__URL -> the URL the user has specified
+// __GLOBAL__LOGIN -> the login status of the user
+// __GLOBAL__STYLE -> the user's style settings
+
+?>

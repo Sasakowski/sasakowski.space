@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
+<?php \Internals\HTML\Head(); \Internals\HTML\Top(); ?>
 
 <block>
 	<flex_rows>
@@ -46,7 +46,7 @@
 			<space></space>
 			<text>These make the great majority of all the possible cookies this website may use. This website would be unviewable without them.
 
-			These cookies can be changed within the <a href = "https://sasakowski.space/Static/Settings/Settings.php">Settings</a>, which includes a button that deletes all cookies currently present.
+			These cookies can be changed within the <a href = "https://sasakowski.space/Static/DisplaySettings/Settings.php">Settings</a>, which includes a button that deletes all cookies currently present.
 			This website will automatically 'fix' broken cookies, as in: if it detects that a cookie is missing or a cookie's value isn't within a specific range of possible values defined by the webserver.
 			</text>
 		
@@ -88,10 +88,10 @@
 		<flex_rows>
 			<texth_l>4 - Session cookie</texth_l>
 			<space></space>
-			<text>This is a lone cookie meant to handle the user's login. It either contains some random characters, or 'None'. It's named <i>Session</i>.
+			<text>This is a lone cookie meant to handle the user's login. It either contains some random characters, or 'None'. It's named <i>SessionKey</i>.
 
-			Upon login, the webserver generates a session key, which is sent to an internal <a href = "https://en.wikipedia.org/wiki/MySQL">MySQL database</a> and the user in the form of the session cookie.
-			This cookie is set to expire 24 hours after the login. The database will clear its entry after 24 hours as well, which'll invalidate a user's session key by force.
+			Upon a successful login, the webserver generates a session key, which is sent to an internal <a href = "https://en.wikipedia.org/wiki/MySQL">MySQL database</a> and to the user in the form of the afromentioned session cookie.
+			This cookie is set to expire 24 hours after the login. The database will clear its entry after 24 hours as well, which'll invalidate a user's session key by force (as in: the user editing the cookie to not expire after 24 hours).
 			The website will read this session key (cookie) and attempt to match it with an entry inside its database. If a match is found, the user's identity is verified.
 			</text>
 

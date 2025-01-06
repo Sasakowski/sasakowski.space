@@ -2,15 +2,15 @@
 <html>
 
 <?php
-if (\Internals\Accounts\GetLoginStatus()["Login"] === 1) {
+if ($__GLOBAL__LOGIN["Login"] === 1) {
 	echo "You're already logged in.<br><br>
-	<a href = 'https://sasakowski.space/Static/Login/LogMeOut.php'>Log out</a>&emsp;
-	<a href = 'https://sasakowski.space/'>Frontpage</a>";
+	<a href = 'https://sasakowski.space/Static/Login/LogMeOut.php'>Log out</a>
+	";
 	exit();
 }
 ?>
 
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
+<?php \Internals\HTML\Head(); \Internals\HTML\UseJS(); \Internals\HTML\Top(); ?>
 
 <?php
 function KeyOptions() {
@@ -64,7 +64,7 @@ function KeyOptions() {
 
 		<space_xl></space_xl>
 
-		<form action = "https://sasakowski.space/Static/Login/LogMeIn.php" method = "POST">
+		<form action = "LogMeIn.php" method = "POST">
 			
 			<flex_rows>
 

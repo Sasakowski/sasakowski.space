@@ -1,4 +1,4 @@
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
+<?php \Internals\HTML\Head(); \Internals\HTML\UseJS(); \Internals\HTML\Top(); ?>
 
 <block><flex_rows>
 
@@ -51,10 +51,10 @@
 
 		<space_l></space_l>
 
-		<block3><text><text_l>Larger than, smaller than</text_l>
+		<block3><text><text_l>Less than, greater than</text_l>
 		In the rare occasion that you want to type the '<' and '>' characters without them causing HTML to activate, type the following:
-		< ===> &amp;lt;
-		> ===> &amp;gt;
+		<&emsp;->&emsp;&amp;lt;
+		>&emsp;->&emsp;&amp;gt;
 		</text></block3>
 	</flex_rows></block2>
 

@@ -4,50 +4,39 @@ use BadFunctionCallException;
 use DateTime;
 use DateTimeZone;
 
-function UTCOffsetFromWebserver($DATE, $NEW_TIMEZONE) {
-	// $DATE -> something like 2024-12-18 00:22:59
-	// $NEW_TIMEZONE -> something like UTC-9
+// UTC+3 to +0300.
+function UTCToNumerical($UTC) {
 
-	if(!str_starts_with($NEW_TIMEZONE, "UTC")) {
-		$NEW_TIMEZONE = "UTC" . $NEW_TIMEZONE;
+	// First verify the input.
+	if (!str_starts_with($UTC, "UTC+") and !str_starts_with($UTC, "UTC-")) {
+		throw new BadFunctionCallException("Timezone is malformed.");
+	}
+	// UTC+3 to +3.
+	$UTC = substr($UTC, 3);
+	if (!is_numeric($UTC) or $UTC < -12 or $UTC > 14) {
+		throw new BadFunctionCallException("Timezone is malformed.");
 	}
 
-	// Webserver dates are in UTC+3
-	if ($NEW_TIMEZONE === "UTC+3") {
-		return $DATE;
-	}
+	$PLUS_MINUS = $UTC[0];
+	$UTC = substr($UTC, 1); // Now it's only a number.
 
-	$DATETIME = new DateTime($DATE, new DateTimeZone( ConvertUTCToNumerical("UTC+3") ));
-	$NEW_TIMEZONE = new DateTimeZone( ConvertUTCToNumerical($NEW_TIMEZONE) );
+	if ($UTC === "0") { $PLUS_MINUS = "+"; } // This is for UTC-0, which is actually UTC+0.
 	
-	$DATETIME -> setTimezone($NEW_TIMEZONE);
-	return $DATETIME -> format('Y-m-d H:i:s');
+	if (strlen($UTC) === 2) {
+		return $PLUS_MINUS . $UTC . "00";
+	} else {
+		return $PLUS_MINUS . "0" . $UTC . "00";
+	}
 }
 
-function ConvertUTCToNumerical($UTC) {
-	// $UTC -> something like UTC+3; we want it to be +0300 instead
+function SetTimezoneOffset($DATE, $TIMEZONE, $NEW_TIMEZONE) {
 
-	if(!str_starts_with($UTC, "UTC")) {
-		throw new BadFunctionCallException("Timezone isn't in the UTC+?(?) or UTC-?(?) format");
-	}
-	
-	$TIMEZONE = substr($UTC, 3); // Remove the UTC from UTC+3
+	$TIMEZONE = new DateTimeZone(UTCToNumerical($TIMEZONE));
+	$NEW_TIMEZONE = new DateTimeZone(UTCToNumerical($NEW_TIMEZONE));
+	$DATE = new DateTime($DATE, $TIMEZONE);
 
-	if($TIMEZONE[0] !== "+" and $TIMEZONE[0] !== "-") {
-		throw new BadFunctionCallException("Timezone has no plus/minus.");
-	}
-	$PREPEND = $TIMEZONE[0]; // + or -
-
-	$TIMEZONE = substr($TIMEZONE, 1); // Remove the plus/minus; now it's only a number, either 1-digit or 2-digits long
-
-	if (strlen($TIMEZONE) === 1) {
-		return $PREPEND . "0" . $TIMEZONE . "00";
-	}
-	elseif (strlen($TIMEZONE) === 2) {
-		return $PREPEND . $TIMEZONE . "00";
-	} else {
-		throw new BadFunctionCallException("Timezone offset is malformed.");
-	}
+	$DATE -> setTimezone($NEW_TIMEZONE);
+	return $DATE -> format('Y-m-d H:i:s');
 }
 
 ?>

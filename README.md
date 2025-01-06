@@ -1,16 +1,9 @@
 # Sasakowski.space
 
-Welcome to the source code of my website!<br>
-[The live version.](https://sasakowski.space/)
+Welcome to the source code of my website! [The live version.](https://sasakowski.space/)
 
-### What this repository SHOULD contain
-- The great majority of the code the website runs on.
-
-### What this repository SHOULDN'T contain
-- Anything that's not guaranteed to be interesting to a programmer.
-- Any file that's too large in size.
-- Anything confidential.
+It should contain the majority of the website's files, excluding some sections that contain heavy-weight data, such as images and other large files.
 
 ### Notes
 
-- Sudden downtimes for any length may occur without any prior warning.
+- Sudden downtimes may occur without any prior warning.

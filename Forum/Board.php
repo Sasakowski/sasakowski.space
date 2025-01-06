@@ -1,79 +1,112 @@
-<!DOCTYPE html>
-<html>
-
 <?php
-// Load the board
+// Get the board name.
+
 $BOARD = isset($_GET["Board"]) ? $_GET["Board"] : null;
 if ($BOARD === null) {
-	echo "No board given.<br><br>
+	echo "<!DOCTYPE html><html>
+	No board given.<br><br>
 	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
-// Check wether this board actually exists
+\Internals\XSS\DisallowMarkup($BOARD);
+
+// Check wether it actually exists.
 $DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_boards` WHERE `Board` = '$BOARD'");
 if (empty($DB)) {
-	echo "Board <i>$BOARD</i> doesn't exist.<br><br>
+	echo "<!DOCTYPE html><html>
+	Board doesn't exist.<br><br>
 	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
-// Check wether the user has the clearance to view this board
-$LOGIN_STATUS = \Internals\Accounts\GetLoginStatus();
-if ($LOGIN_STATUS["Login"] === 0) {
-	echo "You're not logged in.<br><br>
+// Check wether the user can actually view it.
+if ($__GLOBAL__LOGIN["Login"] === 0) {
+	echo "<!DOCTYPE html><html>
+	You're not logged in.<br><br>
 	<a href = 'https://sasakowski.space/Static/Login/Login.php'>Log in</a>";
 	exit();
 }
-$DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '{$LOGIN_STATUS['Username']}'");
+$DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_viewpermissions` WHERE `Board` = '$BOARD' AND `Username` = '{$__GLOBAL__LOGIN["Username"]}'");
 if (empty($DB)) {
-	echo "You don't have the clearance to view this board.<br><br>
+	echo "<!DOCTYPE html><html>
+	You don't have the permission to view this board.<br><br>
 	<a href = 'Forum.php'>Go back</a>";
 	exit();
 }
 
-// At this point, the user has full clearance to view this board
-// $BOARD -> The name of the board
-// $LOGIN_STATUS -> User info
+// Also get the block (this is relevant later).
+// A board contains comments, which are divided into blocks of 16.
+$BLOCK = isset($_GET["Block"]) ? $_GET["Block"] : 1;
+\Internals\XSS\DisallowMarkup($BLOCK);
+if (!is_numeric($BLOCK) or $BLOCK <= 0) {
+	echo "<!DOCTYPE html><html>
+	Block parameter is malformed.<br><br>
+	<a href = '?Board=$BOARD'>Try again with no block parameter</a>&emsp;<a href = 'Forum.php'>Forum</a>
+	";
+	exit();
+}
+$BLOCK = ($BLOCK - 1) * 16; // Block is actually the OFFSET for the SQL query
+
 ?>
 
-<?php \Internals\HTMLElements\Head(); \Internals\HTMLElements\Top(); ?>
+<!DOCTYPE html>
+<html>
+
+<?php \Internals\HTML\Head(); \Internals\HTML\UseJS(); \Internals\HTML\Top(); ?>
 
 <style>
 .edit { text-decoration: none; font-style: normal; }
 </style>
 
 <?php
-// Comments are divided into blocks of 16
-$BLOCK = isset($_GET["Block"]) ? $_GET["Block"] : 1;
-if (!is_numeric($BLOCK) or $BLOCK <= 0) { $BLOCK = 1; }
-$BLOCK = ($BLOCK - 1) * 16;
 
-// Load the comments and adjust the timezones while at it
-$TIMEZONE_OF_USER = $LOGIN_STATUS["Timezone"];
+// Load the comments.
 $DB = \Internals\MySQL\Read("SELECT `ID`,`Username`,`Comment`,`Date` FROM `forum_comments` WHERE `Board` = '$BOARD' ORDER BY `Date` DESC LIMIT 16 OFFSET $BLOCK");
-for ($i = 0; $i < count($DB); $i++) {
-	$ADJUSTED_TIMEZONE = \Internals\Time\UTCOffsetFromWebserver($DB[$i]["Date"], $TIMEZONE_OF_USER);
-	$DB[$i]["Date"] = "$ADJUSTED_TIMEZONE, $TIMEZONE_OF_USER";
+
+// XSS comment check.
+for ($i = 0; $i < count($DB); $i += 1) {
+	\Internals\XSS\FilterTags($DB[$i]["Comment"], [], ["b", "i", "text_l", "text_s"], false);
 }
 
-// Split the mass of comments into blocks of 16, so that the available pages can be correctly displayed
-$DB_COUNT = \Internals\MySQL\Read("SELECT `ID` FROM `forum_comments` WHERE `Board` = '$BOARD'");
-$BLOCKCOUNT = ceil(count($DB_COUNT) / 16) + 1;
+// Adjust for the user's timezone. The webserver's timezone is UTC+3.
+for ($i = 0; $i < count($DB); $i += 1) {
+	if ($__GLOBAL__LOGIN["Timezone"] !== "UTC+3") {
+		$DB[$i]["Date"] = \Internals\Time\SetTimezoneOffset($DB[$i]["Date"], "UTC+3", $__GLOBAL__LOGIN["Timezone"]);
+	}
+	$DB[$i]["Date"] .= ", " . $__GLOBAL__LOGIN["Timezone"];
+}
+
+// Get the ranks of all users present in this block. Also determine wether this comment can be edited.
+$USERS_DONE = [];
+for ($i = 0; $i < count($DB); $i += 1) {
+	
+	$USER = \Internals\Accounts\GetInfo($DB[$i]["Username"]);
+	$DB[$i]["Rank"] = $USER["Rank"];
+	
+	if ($DB[$i]["Username"] === $__GLOBAL__LOGIN["Username"]) {
+		$DB[$i]["Edit"] = true;
+	} else {
+		$DB[$i]["Edit"] = false;
+	}
+}
+
+// Calculate how many blocks there are within this board.
+$_DB = \Internals\MySQL\Read("SELECT `ID` FROM `forum_comments` WHERE `Board` = '$BOARD'");
+$BLOCKS = ceil(count($_DB) / 16);
+
+if ($BLOCK > ($BLOCKS * 16) - 1) {
+	echo "<block><flex_rows class = 'center_h'>
+		<text_l>Block parameter is outside the available range.</text_l>
+		<space></space>
+		<a href = '?Board=$BOARD'>Try again with no block parameter</a>
+	</flex_rows>
+	";
+	
+	exit();
+}
 
 $COMMENTS = json_encode($DB);
+echo "<script>let COMMENTS = $COMMENTS;</script>";
 
-// Load the ranks of all involved users
-$USERS = [];
-foreach ($DB as $COMMENT) {
-	$USERNAME = $COMMENT["Username"];
-	if(in_array($USERNAME, array_keys($USERS))) { continue; }
-	
-	$_DB = \Internals\MySQL\Read("SELECT `Rank` FROM `accounts` WHERE `Username` = '$USERNAME'");
-	$USERS[$USERNAME] = $_DB[0]["Rank"];
-}
-$USERS = json_encode($USERS);
-
-// Submit the data to the frontend (display is done by JS)
-echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS; let THIS_USER = '{$LOGIN_STATUS["Username"]}';</script>";
 ?>
 
 <block><flex_rows>
@@ -107,8 +140,9 @@ echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS; let THIS_USER = '{$L
 
 				<flex_columns style = "gap: var(--space);">
 					<?php
-					for ($i = 1; $i < $BLOCKCOUNT; $i += 1) {
-						echo "<a href = '?Board=$BOARD&Block=$i'>$i</a>";
+					for ($i = 0; $i < $BLOCKS; $i += 1) {
+						$x = $i + 1;
+						echo "<a href = '?Board=$BOARD&Block=$x'>$x</a>";
 					}
 					?>
 				</flex_columns>
@@ -123,42 +157,73 @@ echo "<script>let COMMENTS = $COMMENTS; let USERS = $USERS; let THIS_USER = '{$L
 <block><flex_rows ID = "COMMENT_BLOCK"></flex_rows></block>
 
 <script>
-let BLOCK = document.getElementById("COMMENT_BLOCK");
+let DOM = document.getElementById("COMMENT_BLOCK");
 
 for (let i = 0; i < COMMENTS.length; i++) {
-	const USERNAME = COMMENTS[i]["Username"];
-	const DATE = COMMENTS[i]["Date"];
-	const COMMENT = COMMENTS[i]["Comment"];
-	const ID = COMMENTS[i]["ID"];
-	const RANK = USERS[USERNAME];
-	const RANK_CLASS = RANK.toLowerCase();
+	let USERNAME = COMMENTS[i]["Username"];
+	let DATE = COMMENTS[i]["Date"];
+	let COMMENT = COMMENTS[i]["Comment"];
+	let ID = COMMENTS[i]["ID"];
+	let RANK = COMMENTS[i]["Rank"];
+	let EDIT = COMMENTS[i]["Edit"];
 
-	const EDIT_COMMENT = USERNAME == THIS_USER ? `<space></space><text title = 'Edit this comment.'><a href = 'Edit.php?ID=${ID}' class = 'edit'>✏️</a></text>` : "";
-	const DELETE_COMMENT = USERNAME == THIS_USER ? `<space></space><text title = 'Delete this comment.'><a href = 'Delete.php?ID=${ID}' class = 'edit'>🗑️</a></text>` : "";
+	let _RANK;
+	switch (RANK) {
 
-	const COMMENT_TEMPLATE = `<block2><flex_rows>
+		case "Superorchestrator":
+			_RANK = "rank_so";
+			break;
+		
+		case "Superorchestrator":
+			_RANK = "rank_o";
+			break;
+
+		case "Superorchestrator":
+			_RANK = "rank_a";
+			break;
+
+		case "Superorchestrator":
+			_RANK = "rank_r";
+			break;
+	}
+
+	if (EDIT) {
+		EDIT = `<space></space>
+		<text_s><a class = 'edit' href = 'Edit.php?ID=${ID}'>✏️</a></text_s>
+		<space></space>
+		<text_s><a class = 'edit' href = 'Delete.php?ID=${ID}'>🗑️</a></text_s>
+		`;
+	} else {
+		EDIT = "";
+	}
+
+	DOM.innerHTML += `<block2><flex_rows>
 		<flex_columns class = 'center_v'>
-			<text_s class = '${RANK_CLASS}'> ${RANK}</text_s>
+			<text_s class = '${_RANK}'>${RANK}</text_s>
+			<space></space>
+			<img src = 'https://sasakowski.space/Accounts/Contents/${USERNAME}/PFP.png' style = 'height: var(--text); border-radius: 33%;'>
 			<space></space>
 			<text>${USERNAME}</text>
 			<space></space>
 			<text_s>${DATE}</text_s>
-			${EDIT_COMMENT}
-			${DELETE_COMMENT}
+			${EDIT}
 		</flex_columns>
-		<space></space>
-		<block3 class = 'comment'><text>${COMMENT}</text></block3>
-	</flex_rows></block2>`;
 
-	BLOCK.innerHTML += COMMENT_TEMPLATE;
+		<space></space>
+
+		<block3 class = 'comment'>
+			<text>${COMMENT}</text>
+		</block3>
+	`;
 
 	if (i < COMMENTS.length - 1) {
-		BLOCK.innerHTML += "<space_l></space_l>";
+		DOM.innerHTML += "<space_l></space_l>";
 	}
 }
 
 if (COMMENTS.length === 0) {
-	BLOCK.innerHTML = "<text>This board is empty, yet...</text>";
-	BLOCK.classList.add("center_h");
+	DOM.innerHTML = "<text>This board is empty, yet...</text>";
+	DOM.classList.add("center_h");
 }
+
 </script>
