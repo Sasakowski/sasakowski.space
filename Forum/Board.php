@@ -174,15 +174,15 @@ for (let i = 0; i < COMMENTS.length; i++) {
 			_RANK = "rank_so";
 			break;
 		
-		case "Superorchestrator":
+		case "Orchestrator":
 			_RANK = "rank_o";
 			break;
 
-		case "Superorchestrator":
+		case "Author":
 			_RANK = "rank_a";
 			break;
 
-		case "Superorchestrator":
+		case "Reader":
 			_RANK = "rank_r";
 			break;
 	}
