@@ -22,14 +22,13 @@ echo "<script>let BOARDS = $BOARDS;</script>";
 ?>
 
 <block>
-	<block2>
-		<flex_rows id = "BOARDS">
-			<text_l>Select a board you'd like to view.</text_l>
-			<space></space>
+	<flex_rows>
+		<block2 class = "center_h"><text_l>Select a board you'd like to view.</text_l></block2>
 
-		</flex_rows>
-	</block2>
-</block>
+		<space_xl></space_xl>
+
+		<block2>
+			<flex_rows id = "BOARDS">
 
 <script>
 let _BOARDS = document.getElementById("BOARDS");
@@ -38,7 +37,7 @@ for (let i = 0; i < BOARDS.length; i++) {
 	_BOARDS.innerHTML += `<a href = 'Board.php?Board=${x}'>${x}</a>`;
 	
 	if (i < BOARDS.length - 1) {
-		_BOARDS.innerHTML += "<space_s></space_s>";
+		_BOARDS.innerHTML += "<space></space>";
 	}
 }
 </script>

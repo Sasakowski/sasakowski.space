@@ -12,7 +12,7 @@
 </style>
 
 <block>
-	<flex_rows id = "COLORFUL_BANNER" class = "center_v">
+	<flex_rows id = "COLORFUL_BANNER" class = "center_h">
 		<img src = "<?php echo \Internals\Accounts\GetFileURL("Sasakowski", "Catmask.svg"); ?>" style = "height: 32vh;">
 		<text_l><quote>For what you believe in, you shall live and die for!</quote></text_l>
 		<space></space>

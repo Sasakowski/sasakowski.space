@@ -1,13 +1,9 @@
 <?php
 
-$ID = isset($_GET["ID"]) ? $_GET["ID"] : null;
-if ($ID === null) {
-	echo "<!DOCTYPE><html>
-	No ID given.<br><br>
-	<a href = 'Forum.php'>Forum</a>";
-	exit();
-}
-\Internals\XSS\DisallowMarkup($ID);
+\Internals\XSS\EnsureGet(["ID"]);
+$ID = $_GET["ID"];
+\Internals\XSS\SQL([$ID]);
+\Internals\XSS\KillIfMarkup($ID);
 if ($__GLOBAL__LOGIN["Login"] === 0) {
 	echo "<!DOCTYPE><html>
 	You're not logged in.<br><br>
@@ -29,7 +25,7 @@ if ($COMMENT[0]["Username"] !== $__GLOBAL__LOGIN["Username"]) {
 	<a href = 'Board.php?Board={$COMMENT[0]["Board"]}'>Return to the comment's board</a>";
 	exit();
 }
-\Internals\XSS\FilterTags($COMMENT[0]["Comment"], [], ["b", "i", "text_l", "text_s"], false);
+\Internals\XSS\Presets\Forum($COMMENT[0]["Comment"]);
 
 ?>
 

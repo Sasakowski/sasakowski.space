@@ -1,19 +1,9 @@
 <?php
 
-$ID = isset($_GET["ID"]) ? $_GET["ID"] : null;
-if ($ID === null) {
-	echo "<!DOCTYPE><html>
-	No ID given.<br><br>
-	<a href = 'Forum.php'>Forum</a>";
-	exit();
-}
-\Internals\XSS\DisallowMarkup($ID);
-if ($__GLOBAL__LOGIN["Login"] === 0) {
-	echo "<!DOCTYPE><html>
-	You're not logged in.<br><br>
-	<a href = 'https://sasakowski.space/Static/Login/Login.php'>Login</a>";
-	exit();
-}
+\Internals\XSS\EnsureGet(["ID"]);
+$ID = $_GET["ID"];
+\Internals\XSS\SQL([$ID]);
+\Internals\XSS\KillIfMarkup($ID);
 
 // Load the comment and check wether the user can actually edit it.
 $COMMENT = \Internals\MySQL\Read("SELECT `Board`,`Username`,`Comment` FROM `forum_comments` WHERE `ID` = '$ID'");
@@ -35,7 +25,7 @@ if ($COMMENT[0]["Username"] !== $__GLOBAL__LOGIN["Username"]) {
 <br><br>
 <span style = "font-size: 150%;">The comment you're about to delete could be unrecoverable!</span>
 <br><br>
-<span>The comment could still be within backups and failsaves. If you want this comment to be purged from these as well, get in touch with this website's administration. If so, please write down this comment's ID: <b><?php echo $ID; ?></b></span>
+<span>The comment could still be within backups and failsaves. If you want this comment to be purged fully, get in touch with this website's administration. Oh, and don't forget this comment's ID: <b><?php echo $ID; ?></b></span>
 <br><br>
 <a href = "<?php echo "https://sasakowski.space/Forum/Board.php?Board=" . $COMMENT[0]["Board"]; ?>">Go back</a>
 &emsp;

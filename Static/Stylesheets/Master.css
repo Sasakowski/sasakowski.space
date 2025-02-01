@@ -53,9 +53,10 @@ flex_columns, flex_rows {
 }
 flex_columns { flex-direction: row; }
 flex_rows { flex-direction: column; }
-flex_columns.noflex, flex_rows.noflex { flex: 0; }
 flex_columns.hugright, flex_rows.hugright { justify-content: flex-end; }
-space_amap.noflex { flex: 0; }
+.noflex { flex: 0; }
+.fitcontent_h { width: fit-content; }
+.fitcontent_v { height: fit-content; }
 
 block, block2, block3 {
 	border-radius: 1vh;
@@ -89,13 +90,13 @@ text_l, texth_l { font-size: var(--text_l); }
 text_xl, texth_xl { font-size: var(--text_xl); }
 text_xxl, texth_xxl { font-size: var(--text_xxl); }
 
-.center_h { justify-content: center; }
-.center_v { align-items: center; }
-.center {justify-content: center; align-items: center; }
 flex_rows.center_h { align-items: center; }
 flex_rows.center_v { justify-content: center; }
 flex_columns.center_h { justify-content: center; }
 flex_columns.center_v { align-items: center; }
+*:not(flex_rows):not(flex_columns).center_h { justify-content: center; }
+*:not(flex_rows):not(flex_columns).center_v { align-items: center; }
+.center {justify-content: center; align-items: center; }
 
 /* Main */
 #TOP_LOGO:hover { animation: TopLogoRotation 4s infinite linear; }

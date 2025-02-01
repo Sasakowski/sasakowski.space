@@ -1,14 +1,9 @@
 <?php
 // Get the board name.
 
-$BOARD = isset($_GET["Board"]) ? $_GET["Board"] : null;
-if ($BOARD === null) {
-	echo "<!DOCTYPE html><html>
-	No board given.<br><br>
-	<a href = 'Forum.php'>Go back</a>";
-	exit();
-}
-\Internals\XSS\DisallowMarkup($BOARD);
+\Internals\XSS\EnsureGet(["Board"]);
+$BOARD = $_GET["Board"];
+\Internals\XSS\SQL([$BOARD]);
 
 // Check wether it actually exists.
 $DB = \Internals\MySQL\Read("SELECT `Board` FROM `forum_boards` WHERE `Board` = '$BOARD'");
@@ -36,7 +31,7 @@ if (empty($DB)) {
 // Also get the block (this is relevant later).
 // A board contains comments, which are divided into blocks of 16.
 $BLOCK = isset($_GET["Block"]) ? $_GET["Block"] : 1;
-\Internals\XSS\DisallowMarkup($BLOCK);
+\Internals\XSS\SQL([$BLOCK]);
 if (!is_numeric($BLOCK) or $BLOCK <= 0) {
 	echo "<!DOCTYPE html><html>
 	Block parameter is malformed.<br><br>
@@ -64,7 +59,7 @@ $DB = \Internals\MySQL\Read("SELECT `ID`,`Username`,`Comment`,`Date` FROM `forum
 
 // XSS comment check.
 for ($i = 0; $i < count($DB); $i += 1) {
-	\Internals\XSS\FilterTags($DB[$i]["Comment"], [], ["b", "i", "text_l", "text_s"], false);
+	\Internals\XSS\Presets\Forum($DB[$i]["Comment"]);
 }
 
 // Adjust for the user's timezone. The webserver's timezone is UTC+3.

@@ -19,7 +19,7 @@ function Head() {
 	// First the title, which is affected by AltTheme
 	switch ($ALT_THEME) {
 		case "Ellie":
-			$ECHO_BUFFER .= "<title>Ellie.bluemoon</title>";
+			$ECHO_BUFFER .= "<title>Ellie.moonbound</title>";
 			break;
 		default:
 			$ECHO_BUFFER .= "<title>Sasakowski.space</title>";
@@ -56,7 +56,7 @@ function Top() {
 	switch ($ALT_THEME) {
 		case "Ellie":
 			$LOGO = \Internals\Accounts\GetFileURL("Henry","Ellie Logo.png");
-			$TITLE = "Ellie.bluemoon";
+			$TITLE = "Ellie.moonbound";
 			break;
 		default:
 			$LOGO = \Internals\Accounts\GetFileURL("Sasakowski","Catmask.svg");
@@ -104,8 +104,7 @@ function UseJS() {
 	echo "<body>
 	<noscript id = 'NO_SCRIPT'>
 		<block style = 'z-index: 999; position: absolute; height: 98vh; width: 99vw; border-radius: 0px;'>
-			<flex_rows class = 'center_v'>
-				<space_xl></space_xl>
+			<flex_rows class = 'center'>
 				<text_xl>This website requires JavaScript to function.</text_xl>
 				<space_l></space_l>
 				<img style = 'height: 10vh;' src = 'https://www.nyan.cat/cats/original.gif'>

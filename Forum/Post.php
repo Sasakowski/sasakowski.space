@@ -1,19 +1,11 @@
 <?php
 // This file takes a comment as input, checks if the comment can be posted and finally stores it in the DB
 
-$PARAMETERS = ["Board","Comment"];
-foreach ($PARAMETERS as $PARAMETER)  {
-	if (!isset($_POST[$PARAMETER])) {
-		echo "Malformed POST data.<br><br>
-		<a href = 'Forum.php'>Forum</a>
-		";
-		exit();
-	}
-}
+\Internals\XSS\EnsurePost(["Board", "Comment"]);
 $BOARD = $_POST["Board"];
-\Internals\XSS\DisallowMarkup($BOARD);
 $COMMENT = $_POST["Comment"];
-\Internals\XSS\FilterTags($COMMENT, [], ["b", "i", "text_l", "text_s"], false);
+\Internals\XSS\SQL([$BOARD, $COMMENT]);
+\Internals\XSS\Presets\Forum($COMMENT);
 if ($__GLOBAL__LOGIN["Login"] === 0) {
 	echo "<!DOCTYPE><html>
 	You're not logged in.<br><br>
@@ -33,6 +25,7 @@ if (empty($DB)) {
 }
 
 // The user CAN comment on this board
+$COMMENT = str_replace("'","\'",$COMMENT);
 \Internals\MySQL\Write("INSERT INTO `forum_comments` (`ID`,`Board`,`Username`,`Comment`,`Date`) VALUES (LAST_INSERT_ID(),'$BOARD','$USERNAME','$COMMENT',NOW())");
 
 \Internals\Redirect\Redirect("Board.php?Board=$BOARD");

@@ -1,13 +1,9 @@
 <?php
 
-$ID = isset($_GET["ID"]) ? $_GET["ID"] : null;
-if ($ID === null) {
-	echo "<!DOCTYPE><html>
-	No ID given.<br><br>
-	<a href = 'Forum.php'>Forum</a>";
-	exit();
-}
-\Internals\XSS\DisallowMarkup($ID);
+\Internals\XSS\EnsureGet(["ID"]);
+$ID = $_GET["ID"];
+\Internals\XSS\SQL([$ID]);
+
 if ($__GLOBAL__LOGIN["Login"] === 0) {
 	echo "<!DOCTYPE><html>
 	You're not logged in.<br><br>

@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-
 <?php
 if ($__GLOBAL__LOGIN["Login"] === 1) {
-	echo "You're already logged in.<br><br>
+	echo "<!DOCTYPE html><html>
+	You're already logged in.<br><br>
 	<a href = 'https://sasakowski.space/Static/Login/LogMeOut.php'>Log out</a>
 	";
 	exit();
 }
 ?>
+
+<!DOCTYPE html><html>
 
 <?php \Internals\HTML\Head(); \Internals\HTML\UseJS(); \Internals\HTML\Top(); ?>
 

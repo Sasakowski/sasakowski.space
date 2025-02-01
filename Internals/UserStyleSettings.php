@@ -1,12 +1,12 @@
 <?php namespace Internals\UserStyleSettings;
 
-// Only relevant to Prepend.php and Static/Settings/
-
-function Theme() {
+// Only relevant to Prepend.php
+function _Theme() {
 	$DEFAULT = "Void";
 	$RANGE = ["Void", "Light"];
 
 	$THEME = \Internals\Cookies\Get("Theme", null);
+	\Internals\XSS\SQL([$THEME]);
 
 	// Cookie doesn't exist.
 	if ($THEME === null) {
@@ -18,17 +18,17 @@ function Theme() {
 		\Internals\Cookies\Edit("Theme", $DEFAULT);
 		$THEME = $DEFAULT;
 	}
-	// Checking for XSS is unncessary, because it'd always fail the range check.
 
 	return $THEME;
 
 }
 
-function AltTheme() {
+function _AltTheme() {
 	$DEFAULT = "None";
 	$RANGE = ["None", "Ellie"];
 
 	$ALT_THEME = \Internals\Cookies\Get("AltTheme", null);
+	\Internals\XSS\SQL([$ALT_THEME]);
 
 	// Cookie doesn't exist.
 	if ($ALT_THEME === null) {
@@ -40,17 +40,17 @@ function AltTheme() {
 		\Internals\Cookies\Edit("AltTheme", $DEFAULT);
 		$ALT_THEME = $DEFAULT;
 	}
-	// Checking for XSS is unncessary, because it'd always fail the range check.
 
 	return $ALT_THEME;
 }
 
-function TextSize() {
+function _TextSize() {
 	$MIN = 2;
 	$MAX = 3;
 	$DEFAULT = $MIN;
 
 	$TEXT_SIZE = \Internals\Cookies\Get("TextSize", null);
+	\Internals\XSS\SQL([$TEXT_SIZE]);
 
 	// Cookie doesn't exist.
 	if ($TEXT_SIZE === null) {
@@ -67,7 +67,6 @@ function TextSize() {
 		\Internals\Cookies\Edit("TextSize", $DEFAULT);
 		$TEXT_SIZE = $DEFAULT;
 	}
-	// Checking for XSS is unncessary, because it'd always fail the range check.
 
 	return $TEXT_SIZE;
 }

@@ -39,7 +39,7 @@
 
 	<block2>
 		<flex_rows>
-			<text_l>Text Size</text_l>
+			<text_l>Text size</text_l>
 			<space></space>
 			<text>Current value: <i><?php echo $__GLOBAL__STYLE["TextSize"]; ?></i></text>
 			<space></space>
@@ -56,7 +56,7 @@
 
 	<block2>
 		<flex_rows>
-			<text_l>Alternate Theme <text>(AltTheme)</text></text_l>
+			<text_l>Alternate theme <text>(AltTheme)</text></text_l>
 			<space></space>
 			<text>Currently selected: <i><?php echo $__GLOBAL__STYLE["AltTheme"]; ?></i></text>
 			<space></space>

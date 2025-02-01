@@ -48,17 +48,18 @@ require_once(__DIR__ . "/" . "UserStyleSettings.php"); // Allow interactions bet
 require_once(__DIR__ . "/" . "XSS.php"); // Functions to combat XSS (actually to verify user input).
 require_once(__DIR__ . "/" . "HTML.php"); // Mostly just large preset ECHOs that contain whole HTML segments.
 require_once(__DIR__ . "/" . "Time.php"); // Allow the webserver to juggle time and dates around.
+require_once(__DIR__ . "/" . "XSSPresets.php"); // Some pages share XSS checks.
 
 // Attempt to log the user in, then use the result array as a __GLOBAL__ variable.
 // Do NOT store the session key in a separate variable, to avoid leaking it by accident or XSS.
-$__GLOBAL__LOGIN = \Internals\Accounts\GetLogin();
+$__GLOBAL__LOGIN = \Internals\Accounts\_GetLogin();
 
 // Load the user's style (theme, alttheme, textsize) and store all settings as a __GLOBAL__ variable.
 // These functions verify and repair themselves (they're cookies) if given.
 $__GLOBAL__STYLE = [
-	"Theme" => \Internals\UserStyleSettings\Theme(),
-	"AltTheme" => \Internals\UserStyleSettings\AltTheme(),
-	"TextSize" => \Internals\UserStyleSettings\TextSize(),
+	"Theme" => \Internals\UserStyleSettings\_Theme(),
+	"AltTheme" => \Internals\UserStyleSettings\_AltTheme(),
+	"TextSize" => \Internals\UserStyleSettings\_TextSize(),
 ];
 
 // __GLOBAL__MAINTENANCE_MODE -> if the page is in maintenance mode (actually only false because execution stops if its true).

@@ -1,6 +1,8 @@
 <?php
+// Do not EnsureGet() because it's always required.
 $PROFILE = isset($_GET["Profile"]) ? $_GET["Profile"] : "";
-\Internals\XSS\DisallowMarkup($PROFILE);
+\Internals\XSS\KillIfMarkup($PROFILE);
+\Internals\XSS\SQL([$PROFILE]);
 
 if ($PROFILE === "" and $__GLOBAL__LOGIN["Login"] === 0) {
 	echo "<!DOCTYPE html><html>
@@ -28,6 +30,16 @@ try {
 	";
 	exit();
 }
+
+// Now load it!
+$DB = \Internals\MySQL\Read("SELECT `Markup` FROM `profiles` WHERE `Username` = '{$PROFILE["Username"]}'");
+if (empty($DB)) {
+	$MARKUP = "NOT_FOUND";
+} else {
+	$MARKUP = $DB[0]["Markup"];
+}
+\Internals\XSS\Presets\Profile($MARKUP);
+
 ?>
 
 <!DOCTYPE html>
@@ -53,9 +65,10 @@ try {
 					<text_l><i>{$PROFILE["Username"]}!</i></text_l>
 					<space_l></space_l>
 					<img src = '$PFP' style = 'height: var(--text_xl); border-radius: var(--text_s);'>
+					<space_l></space_l>
+					<a href = 'ProfileEdit.php' style = 'text-decoration: none;'>✏️</a>
 					";
-				
-
+					
 				} else {
 
 					// The user is viewing someone else's profile.
@@ -73,7 +86,15 @@ try {
 		<space_xl></space_xl>
 
 		<block2 class = "center_h">
-			<text_l>The profile feature isn't yet implemented.</text_l>
+			<?php
+			if ($MARKUP === "NOT_FOUND") {
+				echo "<text_l>This profile has no database entry.</text_l>";
+			} elseif ($MARKUP === "") {
+				echo "<text_l>This profile is empty.</text_l>";
+			} else {
+				echo "$MARKUP";
+			}
+			?>
 		</block2>
 
 	</flex_rows>

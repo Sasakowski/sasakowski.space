@@ -25,6 +25,8 @@ function GetFileURL($USERNAME, $FILE) {
 // Get the data of any account
 function GetInfo($USERNAME) {
 	
+	\Internals\XSS\SQL([$USERNAME]);
+	\Internals\XSS\KillIfMarkup($USERNAME);
 	$DB = \Internals\MySQL\Read("SELECT `Rank`,`Status`,`Age`,`Timezone` FROM `accounts` WHERE `Username` = '$USERNAME'");
 	
 	if (empty($DB)) {
@@ -43,26 +45,25 @@ function GetInfo($USERNAME) {
 
 
 // Only relevant to Prepend.php
-function GetLogin() {
+function _GetLogin() {
 
 	$SESSION_KEY = \Internals\Cookies\Get("SessionKey", null);
-	// TODO: disallow SQL
 
 	if ($SESSION_KEY === null) {
-		
 		// The session key doesn't exist, so make no further efforts to log the user in.
 		return [
-			"Login" => 0, // 0 means no session key exists.
+			"Login" => 0, // 0 means no session key exists, aka anonymous login.
 			"Username" => "None",
 			"Rank" => "None",
 			"Status" => "None",
 			"Age" => "None",
 			"Timezone" => "None",
 		];
-
+		
 	} else {
 
 		// A session key does exist, so continue the effort.
+		\Internals\XSS\SQL([$SESSION_KEY === null ? "" : $SESSION_KEY]);
 		$DB = \Internals\MySQL\Read("SELECT `Username` FROM `session_keys` WHERE `Session Key` = '$SESSION_KEY'");
 
 		if (empty($DB) and !str_starts_with($GLOBALS["__GLOBAL__URL"], "/Static/Login/")) {
@@ -94,8 +95,8 @@ function GetLogin() {
 		} elseif ($STATUS === "Banned") {
 
 			echo "<!DOCTYPE html><html>
-			Your account is banned. You most likely know why.<br><br>
-			Before you go, I'd like to say that <audio src = 'https://sasakowski.space/Static/Login/Ylvis.ogg' controls loop>
+			Your account is banned, so have a nice day.<br><br>
+			Oh, and before you go, I'd like to say that <audio src = 'https://sasakowski.space/Static/Login/Ylvis.ogg' controls loop>
 			";
 			exit();
 		}

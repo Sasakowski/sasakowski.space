@@ -44,7 +44,7 @@ function Edit($KEY, $NEW_VALUE) {
 }
 
 // A cookie is deleted by giving it an expiry date past the current date.
-// Here, 01.01.1970 00:00:00+1 is used
+// Here, 01.01.1970 00:00:00+1 is used.
 function Delete($KEY) {
 
 	setcookie($KEY, "", 1, "/", "sasakowski.space");

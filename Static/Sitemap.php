@@ -26,7 +26,9 @@
 			<flex_columns>
 				<a href = "https://sasakowski.space/Static/DisplaySettings/Settings.php">Display settings</a>
 				<space_xl></space_xl>
-				<a href = "https://sasakowski.space/Static/CookiePolicy.php">Cookie Policy</a>
+				<a href = "https://sasakowski.space/Static/CookiePolicy.php">Cookie policy</a>
+				<space_xl></space_xl>
+				<a href = "https://sasakowski.space/Static/StylizationGuide.php">Stylization guide</a>
 			</flex_columns>
 		</flex_rows>
 	</flex_columns></block2>
@@ -37,12 +39,12 @@
 		<flex_rows>
 			<text_l>Strimaginus Project</text_l>
 			<space></space>
-			<!-- <flex_columns>
-				<a href = "https://sasakowski.space/Strimaginus/Introduction.php">Introduction</a>
-			</flex_columns>
-			<space></space> -->
 			<flex_columns>
-				<a href = "https://sasakowski.space/Accounts/Profile.php">Your profile</a>
+				<a href = "https://sasakowski.space/StrimaginusProject/Landing.php">Landing</a>
+			</flex_columns>
+			<space></space>
+			<flex_columns>
+				<a href = "https://sasakowski.space/Accounts/Profile.php">Profile</a>
 				<space_xl></space_xl>
 				<a href = "https://sasakowski.space/Accounts/RegisteredAccounts.php">Registered accounts</a>
 			</flex_columns>
